@@ -13,7 +13,7 @@ GamePlay::GamePlay()
     , mIsMovingRight(false)
     , mPlayer() {
     mPlayer.loadTexture("../../src/Player.png");
-    mPlayer.setPosition({0.f, 0.f});
+    mPlayer.setPosition({400.f, 300.f});
     mWindow.setFramerateLimit(60);
 }
 
@@ -56,17 +56,18 @@ void GamePlay::update() {
     }
     if (mIsMovingLeft) {
         movement.x -= 5.f;
-        mPlayer.setDirection(3);
+        mPlayer.setDirection(1);
     }
     if (mIsMovingRight) {
         movement.x += 5.f;
-        mPlayer.setDirection(1);
+        mPlayer.setDirection(3);
     }
-    mPlayer.move(movement, 3.f);
+    mPlayer.move(movement);
 }
 void GamePlay::render() {
     mWindow.clear();
     mPlayer.draw(mWindow);
+    // mWindow.draw(mPlayer);
     mWindow.display();
 }
 void GamePlay::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
