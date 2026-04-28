@@ -6,6 +6,7 @@
 #define CMAKESFMLPROJECT_GAMEPLAY_H
 #include <SFML/Graphics.hpp>
 #include "Player.h"
+#include <cmath>
 class GamePlay {
 private:
     sf::RenderWindow mWindow;

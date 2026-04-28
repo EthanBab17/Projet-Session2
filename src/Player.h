@@ -5,7 +5,8 @@
 #ifndef CMAKESFMLPROJECT_PLAYER_H
 #define CMAKESFMLPROJECT_PLAYER_H
 #include <SFML/Graphics.hpp>
-#include <iostream> 
+#include "DeltaTime.h"
+#include <iostream>
 
 class Player {
 private:
@@ -18,7 +19,7 @@ public:
     void setDirection(int index);
     void setPosition(sf::Vector2f position);
     void draw(sf::RenderWindow& window);
-    void move(sf::Vector2f offset);
+    void move(sf::Vector2f direction, float deltaTime);
 };
 
 
