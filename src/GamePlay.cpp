@@ -12,10 +12,8 @@ GamePlay::GamePlay()
     , mIsMovingLeft(false)
     , mIsMovingRight(false)
     , mPlayer() {
-    mPlayer.setRadius(40.f);
-    mPlayer.setPosition({100.f, 100.f});
-    mPlayer.setFillColor(sf::Color::Red);
-
+    mPlayer.loadTexture("../../src/Player.png");
+    mPlayer.setPosition({400.f, 300.f});
     mWindow.setFramerateLimit(60);
 }
 
@@ -48,19 +46,28 @@ void GamePlay::processEvents() {
 }
 void GamePlay::update() {
     sf::Vector2f movement(0.f, 0.f);
-    if (mIsMovingUp)
+    if (mIsMovingUp) {
         movement.y -= 5.f;
-    if (mIsMovingDown)
+        mPlayer.setDirection(2);
+    }
+    if (mIsMovingDown) {
         movement.y += 5.f;
-    if (mIsMovingLeft)
+        mPlayer.setDirection(0);
+    }
+    if (mIsMovingLeft) {
         movement.x -= 5.f;
-    if (mIsMovingRight)
+        mPlayer.setDirection(1);
+    }
+    if (mIsMovingRight) {
         movement.x += 5.f;
+        mPlayer.setDirection(3);
+    }
     mPlayer.move(movement);
 }
 void GamePlay::render() {
     mWindow.clear();
-    mWindow.draw(mPlayer);
+    mPlayer.draw(mWindow);
+    // mWindow.draw(mPlayer);
     mWindow.display();
 }
 void GamePlay::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {

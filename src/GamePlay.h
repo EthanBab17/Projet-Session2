@@ -5,11 +5,11 @@
 #ifndef CMAKESFMLPROJECT_GAMEPLAY_H
 #define CMAKESFMLPROJECT_GAMEPLAY_H
 #include <SFML/Graphics.hpp>
-
+#include "Player.h"
 class GamePlay {
 private:
     sf::RenderWindow mWindow;
-    sf::CircleShape mPlayer;
+    Player mPlayer;
     bool mIsMovingUp;
     bool mIsMovingDown;
     bool mIsMovingLeft;
