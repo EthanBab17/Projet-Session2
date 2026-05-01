@@ -9,7 +9,7 @@ Player::Player()
 {
     mSprite.setOrigin({32.f, 32.f});
     mSourceRect = sf::IntRect({0, 0}, {425, 625});
-    mSprite.setScale({0.25f, 0.25f});
+    mSprite.setScale({0.30f, 0.30f});
 }
 
 void Player::loadTexture(const std::string &filename) {

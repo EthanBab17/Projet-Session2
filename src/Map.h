@@ -5,15 +5,19 @@
 #ifndef CMAKESFMLPROJECT_MAP_H
 #define CMAKESFMLPROJECT_MAP_H
 #include<SFML/Graphics.hpp>
+#include <iostream>
 
-class Map: public sf::Drawable {
+class Map{
     private:
-    void draw(sf::RenderTarget& target, sf::RenderStates state) const override;
-    sf::Texture tileTexture;
-    sf::VertexArray tile;
+    sf::Texture mapTexture;
+    sf::Sprite mapSprite;
+    sf::IntRect mapSourceRect;
 
     public:
-    bool load(const std::string& tilesetPath, sf::Vector2u tileSize, const int* tiles, unsigned int width, unsigned int height);
+    Map();
+    void loadTexture(const std::string &filename);
+    void draw(sf::RenderWindow& window);
+    void setPosition(sf::Vector2f position);
 };
 
 

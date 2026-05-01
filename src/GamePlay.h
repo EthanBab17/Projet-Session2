@@ -6,11 +6,13 @@
 #define CMAKESFMLPROJECT_GAMEPLAY_H
 #include <SFML/Graphics.hpp>
 #include "Player.h"
+#include "Map.h"
 #include <cmath>
 class GamePlay {
 private:
     sf::RenderWindow mWindow;
     Player mPlayer;
+    Map mMap;
     bool mIsMovingUp;
     bool mIsMovingDown;
     bool mIsMovingLeft;
