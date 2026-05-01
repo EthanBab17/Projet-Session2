@@ -20,7 +20,9 @@ add_executable(main src/main.cpp
         src/DeltaTime.cpp
         src/DeltaTime.h
         src/Map.cpp
-        src/Map.h)
+        src/Map.h
+        src/Entities.cpp
+        src/Entities.h)
 target_compile_features(main PRIVATE cxx_std_17)
 target_link_libraries(main PRIVATE SFML::Graphics)
 

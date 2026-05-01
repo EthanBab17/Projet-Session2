@@ -7,18 +7,13 @@
 #include <SFML/Graphics.hpp>
 #include "DeltaTime.h"
 #include <iostream>
+#include "Entities.h"
 
-class Player {
-private:
-    sf::IntRect mSourceRect;
-    sf::Texture mTexture;
-    sf::Sprite mSprite;
+class Player : public Entities{
 public:
     Player();
-    void loadTexture(const std::string& filename);
     void setDirection(int index);
     void setPosition(sf::Vector2f position);
-    void draw(sf::RenderWindow& window);
     void move(sf::Vector2f direction, float deltaTime);
 };
 

@@ -15,7 +15,7 @@ GamePlay::GamePlay()
     , mMap()
 {
     mPlayer.loadTexture("../../src/Player.png");
-    mPlayer.setPosition({0.f, 0.f});
+    mPlayer.setPosition({860.f, 0.f});
     mWindow.setFramerateLimit(60);
     mMap.loadTexture("../../src/Map.png");
     mMap.setPosition({0.f,0.f});

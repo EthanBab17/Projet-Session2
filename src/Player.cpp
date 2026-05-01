@@ -4,22 +4,12 @@
 
 #include "Player.h"
 
-Player::Player()
-    : mSprite(mTexture)
-{
+Player::Player(){
     mSprite.setOrigin({32.f, 32.f});
     mSourceRect = sf::IntRect({0, 0}, {425, 625});
     mSprite.setScale({0.30f, 0.30f});
 }
 
-void Player::loadTexture(const std::string &filename) {
-    if (mTexture.loadFromFile(filename)) {
-        mSprite.setTexture(mTexture);
-        mSprite.setTextureRect(mSourceRect);
-    } else {
-        std::cout << "Erreur de chargement de : " << filename << std::endl;
-    }
-}
 void Player::setDirection(int index) {
     // index 0: Face, 1: Droite, 2: Arrière, 3: Gauche
     int column = index % 2; // Donne 0 ou 1
@@ -32,10 +22,6 @@ void Player::setDirection(int index) {
 }
 void Player::setPosition(sf::Vector2f position) {
     mSprite.setPosition(position);
-}
-
-void Player::draw(sf::RenderWindow& window) {
-    window.draw(mSprite);
 }
 
 void Player::move(sf::Vector2f direction, float deltaTime) {
