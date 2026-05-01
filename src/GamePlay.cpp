@@ -49,6 +49,8 @@ void GamePlay::processEvents() {
     }
 }
 void GamePlay::update() {
+    sf::Vector2f oldPosition = mPlayer.getPosition();
+    std::cout << mPlayer.getPosition().x << " " << mPlayer.getPosition().y << std::endl;
     sf::Vector2f movement(0.f, 0.f);
     if (mIsMovingUp) {
         movement.y -= 5.f;
@@ -67,6 +69,19 @@ void GamePlay::update() {
         mPlayer.setDirection(1);
     }
     mPlayer.move(movement, 3.f);
+
+    bool collisionDetected = false;
+    for (const auto& wall : mMap.mhitboxes) {
+        if (mPlayer.mhitbox.findIntersection(wall)) {
+            collisionDetected = true;
+        }
+    }
+    if (collisionDetected) {
+        mPlayer.setPosition(oldPosition);
+        // Important : replacer la hitbox à la position de sauvegarde aussi !
+        mPlayer.mhitbox.position.x = (oldPosition.x + 20);
+        mPlayer.mhitbox.position.y = (oldPosition.y + 100);
+    }
 }
 void GamePlay::render() {
     mWindow.clear();

@@ -12,9 +12,14 @@ public:
     sf::Sprite mSprite;
     sf::IntRect mSourceRect;
     sf::Texture mTexture;
+    sf::FloatRect mhitbox;
+    std::vector<sf::FloatRect> mhitboxes;
+    sf::Vector2f mPosition;
     Entities() : mSprite(mTexture){};
     void loadTexture(const std::string &filename);
     void draw(sf::RenderWindow &window);
+    void setPosition(sf::Vector2f position);
+    sf::Vector2f getPosition();
 };
 
 

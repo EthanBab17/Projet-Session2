@@ -11,7 +11,6 @@
 class Map : public Entities{
     public:
     Map();
-    void setPosition(sf::Vector2f position);
 };
 
 

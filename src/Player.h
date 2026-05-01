@@ -13,7 +13,6 @@ class Player : public Entities{
 public:
     Player();
     void setDirection(int index);
-    void setPosition(sf::Vector2f position);
     void move(sf::Vector2f direction, float deltaTime);
 };
 

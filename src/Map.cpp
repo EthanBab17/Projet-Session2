@@ -8,9 +8,10 @@ Map::Map()
     mSprite.setOrigin({0.f, 0.f});
     mSprite.setScale({2.15f, 2.4f});
     mSourceRect = sf::IntRect({0, 0}, {900, 507});
-    mTexture.setSmooth(false);
+    mhitboxes.push_back(sf::FloatRect({1065, 0}, {855, 625}));
+    mhitboxes.push_back(sf::FloatRect({0, 0}, {760, 420}));
+    mhitboxes.push_back(sf::FloatRect({0, 420}, {190, 220}));
+    mhitboxes.push_back(sf::FloatRect({0, 640}, {750, 558}));
+    mhitboxes.push_back(sf::FloatRect({750, 973}, {1000, 250}));
     }
 
-void Map::setPosition(sf::Vector2f position) {
-    mSprite.setPosition(position);
-}
