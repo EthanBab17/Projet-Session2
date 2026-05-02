@@ -88,7 +88,6 @@ void GamePlay::update() {
         }
     }
 
-
     if (mPlayer.getPosition().y < -150.f && mMap.mCurrentMapIndex != 1) {
        map2();
     }
@@ -148,6 +147,6 @@ void GamePlay::map3() {
     if (mMap.mCurrentMapIndex < mMap.mMapsHitboxes.size()) {
         mMap.loadTexture("../../src/Map3.png");
         float windowlength = static_cast<float>(mWindow.getSize().x);
-        mPlayer.setPosition({windowlength - 1850.f, mPlayer.getPosition().y});
+        mPlayer.setPosition({windowlength - 1890.f, mPlayer.getPosition().y});
     }
 }

@@ -13,6 +13,7 @@ Map::Map()
     mhitboxes.push_back(sf::FloatRect({0, 420}, {190, 220}));
     mhitboxes.push_back(sf::FloatRect({0, 640}, {750, 558}));
     mhitboxes.push_back(sf::FloatRect({750, 973}, {1000, 250}));
+    mhitboxes.push_back(sf::FloatRect({0, 1200}, {2000, 10}));
     mMapsHitboxes.push_back(mhitboxes);
     mhitboxes.clear();
 
@@ -25,7 +26,14 @@ Map::Map()
     mhitboxes.clear();
 
     mhitboxes.push_back(sf::FloatRect({0, 0}, {2000, 95}));
-    mhitboxes.push_back(sf::FloatRect({1900, 0}, {20,1500 }));
+    mhitboxes.push_back(sf::FloatRect({1730, 0}, {200,1500 }));
+    mhitboxes.push_back(sf::FloatRect({0, 0}, {50, 700}));
+    mhitboxes.push_back(sf::FloatRect({135, 628}, {250, 320}));
+    mhitboxes.push_back(sf::FloatRect({185, 0}, {550, 635}));
+    mhitboxes.push_back(sf::FloatRect({750, 500}, {100, 140}));
+    mhitboxes.push_back(sf::FloatRect({850, 0}, {465, 655}));
+    mhitboxes.push_back(sf::FloatRect({0, 1200}, {2000, 10}));
+    mhitboxes.push_back(sf::FloatRect({725, 895}, {250, 320}));
     mMapsHitboxes.push_back(mhitboxes);
     mhitboxes.clear();
     }
