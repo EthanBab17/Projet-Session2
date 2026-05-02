@@ -22,6 +22,10 @@ private:
     void update();
     void render();
     void handlePlayerInput(sf::Keyboard::Key key, bool isPressed);
+    void map1Down();
+    void map1Left();
+    void map2();
+    void map3();
 public:
     GamePlay();
     void run();

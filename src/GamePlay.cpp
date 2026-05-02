@@ -17,7 +17,8 @@ GamePlay::GamePlay()
     mPlayer.loadTexture("../../src/Player.png");
     mPlayer.setPosition({860.f, 0.f});
     mWindow.setFramerateLimit(60);
-    mMap.loadTexture("../../src/Map.png");
+    mMap.loadTexture("../../src/Map1.png");
+    mMap.mCurrentMapIndex = 0;
     mMap.setPosition({0.f,0.f});
 }
 
@@ -50,6 +51,7 @@ void GamePlay::processEvents() {
 }
 void GamePlay::update() {
     sf::Vector2f oldPosition = mPlayer.getPosition();
+    std::cout << "Nombre de murs sur cette map : " << mMap.mMapsHitboxes[mMap.mCurrentMapIndex].size() << std::endl;
     std::cout << mPlayer.getPosition().x << " " << mPlayer.getPosition().y << std::endl;
     sf::Vector2f movement(0.f, 0.f);
     if (mIsMovingUp) {
@@ -65,22 +67,39 @@ void GamePlay::update() {
         mPlayer.setDirection(3);
     }
     if (mIsMovingRight) {
-        movement.x += 5.f;
+        movement.x += 5.f ;
         mPlayer.setDirection(1);
     }
     mPlayer.move(movement, 3.f);
 
-    bool collisionDetected = false;
-    for (const auto& wall : mMap.mhitboxes) {
-        if (mPlayer.mhitbox.findIntersection(wall)) {
-            collisionDetected = true;
+    if (mMap.mCurrentMapIndex < mMap.mMapsHitboxes.size()) {
+        for (const auto& wall : mMap.mMapsHitboxes[mMap.mCurrentMapIndex]) {
+            bool collisionDetected = false;
+            for (const auto& wall : mMap.mMapsHitboxes[mMap.mCurrentMapIndex]) {
+                if (mPlayer.mhitbox.findIntersection(wall)) {
+                    collisionDetected = true;
+                }
+            }
+            if (collisionDetected) {
+                mPlayer.setPosition(oldPosition);
+                mPlayer.mhitbox.position.x = (oldPosition.x + 20);
+                mPlayer.mhitbox.position.y = (oldPosition.y + 100);
+            }
         }
     }
-    if (collisionDetected) {
-        mPlayer.setPosition(oldPosition);
-        // Important : replacer la hitbox à la position de sauvegarde aussi !
-        mPlayer.mhitbox.position.x = (oldPosition.x + 20);
-        mPlayer.mhitbox.position.y = (oldPosition.y + 100);
+
+
+    if (mPlayer.getPosition().y < -150.f && mMap.mCurrentMapIndex != 1) {
+       map2();
+    }
+    if (mPlayer.getPosition().y > 1150.f && mMap.mCurrentMapIndex != 0) {
+        map1Down();
+    }
+    if (mPlayer.getPosition().x > 1900.f && mMap.mCurrentMapIndex != 2) {
+        map3();
+    }
+    if (mPlayer.getPosition().x < -50.f && mMap.mCurrentMapIndex != 0) {
+        map1Left();
     }
 }
 void GamePlay::render() {
@@ -98,4 +117,37 @@ void GamePlay::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
         mIsMovingLeft = isPressed;
     else if (key == sf::Keyboard::Key::D)
         mIsMovingRight = isPressed;
+}
+
+void GamePlay::map1Down() {
+    mMap.mCurrentMapIndex=0;
+    if (mMap.mCurrentMapIndex < mMap.mMapsHitboxes.size()) {
+        mMap.loadTexture("../../src/Map1.png");
+        float windowHeight = static_cast<float>(mWindow.getSize().y);
+        mPlayer.setPosition({ mPlayer.getPosition().x,   windowHeight - 1200.f});
+    }
+}
+void GamePlay::map1Left() {
+    mMap.mCurrentMapIndex=0;
+    if (mMap.mCurrentMapIndex < mMap.mMapsHitboxes.size()) {
+        mMap.loadTexture("../../src/Map1.png");
+        float windowlength = static_cast<float>(mWindow.getSize().x);
+        mPlayer.setPosition({windowlength - 70.f, mPlayer.getPosition().y});
+    }
+}
+void GamePlay::map2() {
+    mMap.mCurrentMapIndex=1;
+    if (mMap.mCurrentMapIndex < mMap.mMapsHitboxes.size()) {
+        mMap.loadTexture("../../src/Map2.png");
+        float windowHeight = static_cast<float>(mWindow.getSize().y);
+        mPlayer.setPosition({ mPlayer.getPosition().x, windowHeight - 200.f });
+    }
+}
+void GamePlay::map3() {
+    mMap.mCurrentMapIndex=2;
+    if (mMap.mCurrentMapIndex < mMap.mMapsHitboxes.size()) {
+        mMap.loadTexture("../../src/Map3.png");
+        float windowlength = static_cast<float>(mWindow.getSize().x);
+        mPlayer.setPosition({windowlength - 1850.f, mPlayer.getPosition().y});
+    }
 }

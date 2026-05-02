@@ -10,7 +10,11 @@
 
 class Map : public Entities{
     public:
+    std::vector<sf::FloatRect> mhitboxes;
+    std::vector<std::vector<sf::FloatRect>> mMapsHitboxes;
+    int mCurrentMapIndex;
     Map();
+    void draw(sf::RenderWindow &window);
 };
 
 
