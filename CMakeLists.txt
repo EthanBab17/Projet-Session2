@@ -22,7 +22,9 @@ add_executable(main src/main.cpp
         src/Map.cpp
         src/Map.h
         src/Entities.cpp
-        src/Entities.h)
+        src/Entities.h
+        src/Menu.cpp
+        src/Menu.h)
 target_compile_features(main PRIVATE cxx_std_17)
 target_link_libraries(main PRIVATE SFML::Graphics)
 

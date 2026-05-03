@@ -8,11 +8,15 @@
 #include "Player.h"
 #include "Map.h"
 #include <cmath>
+#include "Menu.h"
+
 class GamePlay {
 private:
     sf::RenderWindow mWindow;
     Player mPlayer;
     Map mMap;
+    Menu mMenu;
+    bool inMenu;
     bool mIsMovingUp;
     bool mIsMovingDown;
     bool mIsMovingLeft;
