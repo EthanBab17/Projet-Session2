@@ -9,6 +9,7 @@
 #include "Map.h"
 #include <cmath>
 #include "Menu.h"
+#include "Door.h"
 
 class GamePlay {
 private:
@@ -17,6 +18,7 @@ private:
     Map mMap;
     Menu mMenu;
     bool inMenu;
+    Door mDoor;
     bool mIsMovingUp;
     bool mIsMovingDown;
     bool mIsMovingLeft;
@@ -30,6 +32,8 @@ private:
     void map1Left();
     void map2();
     void map3();
+    void HouseIn();
+    void HouseOut();
 public:
     GamePlay();
     void run();

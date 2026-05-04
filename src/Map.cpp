@@ -36,22 +36,11 @@ Map::Map()
     mhitboxes.push_back(sf::FloatRect({725, 895}, {250, 320}));
     mMapsHitboxes.push_back(mhitboxes);
     mhitboxes.clear();
+
+    mhitboxes.push_back(sf::FloatRect({0, 1200}, {1200, 100}));
+    mMapsHitboxes.push_back(mhitboxes);
     }
 
 void Map::draw(sf::RenderWindow &window) {
     window.draw(mSprite);
-
-    for (size_t i = 0; i < mhitboxes.size(); i++) {
-        sf::RectangleShape debugRect;
-
-        // On donne au rectangle la taille et la position de la FloatRect
-        debugRect.setSize(mMapsHitboxes[mCurrentMapIndex][i].size);
-        debugRect.setPosition(mMapsHitboxes[mCurrentMapIndex][i].position);
-
-        // On le rend visible (rouge transparent par exemple)
-        debugRect.setFillColor(sf::Color::Transparent); // Rouge avec 100 d'opacité
-        debugRect.setOutlineColor(sf::Color::Red);
-        debugRect.setOutlineThickness(1.f);
-        window.draw(debugRect);
-    }
 }

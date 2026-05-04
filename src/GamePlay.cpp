@@ -4,8 +4,6 @@
 
 #include "GamePlay.h"
 
-
-
 GamePlay::GamePlay()
     : mWindow(sf::VideoMode(sf::VideoMode::getDesktopMode()),"Game", sf::Style::None)
     , mIsMovingUp(false)
@@ -15,6 +13,7 @@ GamePlay::GamePlay()
     , mPlayer()
     , mMap()
     , mMenu()
+    , mDoor()
 {
     mPlayer.loadTexture("../../src/Player.png");
     mPlayer.setPosition({860.f, 0.f});
@@ -23,7 +22,9 @@ GamePlay::GamePlay()
     mMap.mCurrentMapIndex = 0;
     mMap.setPosition({0.f,0.f});
     mMenu.menuLoadTexture("../../src/Map2.png");
-    mMenu.init();
+    float lenght = (static_cast<float>(mWindow.getSize().x)/2);
+    float width = ((static_cast<float>(mWindow.getSize().y)/2)-100.f);
+    mMenu.init(lenght,width);
     mMenu.setPosition({0.f, 0.f});
     inMenu = true;
 }
@@ -45,6 +46,7 @@ void GamePlay::processEvents() {
             if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()) {
                 if (keyPressed->code == sf::Keyboard::Key::Escape) {
                     inMenu = true;
+                    // mWindow.close();
                 }
                 handlePlayerInput(keyPressed->code, true);
             }
@@ -98,7 +100,7 @@ void GamePlay::update() {
         if (mPlayer.getPosition().y < -150.f && mMap.mCurrentMapIndex != 1) {
             map2();
         }
-        if (mPlayer.getPosition().y > 1150.f && mMap.mCurrentMapIndex != 0) {
+        if (mPlayer.getPosition().y > 1150.f && mMap.mCurrentMapIndex != 0 && mMap.mCurrentMapIndex != 3) {
             map1Down();
         }
         if (mPlayer.getPosition().x > 1900.f && mMap.mCurrentMapIndex != 2) {
@@ -106,6 +108,12 @@ void GamePlay::update() {
         }
         if (mPlayer.getPosition().x < -50.f && mMap.mCurrentMapIndex != 0) {
             map1Left();
+        }
+        if (mPlayer.mhitbox.findIntersection(mDoor.mhitboxes[0]) && mMap.mCurrentMapIndex == 2) {
+            HouseIn();
+        }
+        if (mPlayer.mhitbox.findIntersection(mDoor.mhitboxes[1]) && mMap.mCurrentMapIndex == 3) {
+            HouseOut();
         }
     }
 }
@@ -128,9 +136,8 @@ void GamePlay::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
             mMenu.mCurrentMenuIndex = (mMenu.mCurrentMenuIndex + 1) % mMenu.mMaxMenuOptions;
         }
         if (key == sf::Keyboard::Key::Enter) {
-            // On valide le choix
-            if (mMenu.mCurrentMenuIndex == 0) inMenu = false; // "Play" : on lance le jeu
-            if (mMenu.mCurrentMenuIndex == 1) mWindow.close(); // "Quit" : on ferme
+            if (mMenu.mCurrentMenuIndex == 0) inMenu = false;
+            if (mMenu.mCurrentMenuIndex == 1) mWindow.close();
         }
     }
     if (!inMenu) {
@@ -176,5 +183,22 @@ void GamePlay::map3() {
         mMap.loadTexture("../../src/Map3.png");
         float windowlength = static_cast<float>(mWindow.getSize().x);
         mPlayer.setPosition({windowlength - 1890.f, mPlayer.getPosition().y});
+    }
+}
+void GamePlay::HouseIn() {
+    if (mMap.mCurrentMapIndex < mMap.mMapsHitboxes.size()) {
+        mMap.mCurrentMapIndex=3;
+        mMap.loadTexture("../../src/House.png");
+        float windowlength = static_cast<float>(mWindow.getSize().x);
+        float windowwidth = static_cast<float>(mWindow.getSize().y);
+        mPlayer.setPosition({windowlength /2, windowwidth - 250.f});
+    }
+}
+void GamePlay::HouseOut() {
+    if (mMap.mCurrentMapIndex < mMap.mMapsHitboxes.size()) {
+        mMap.mCurrentMapIndex=2;
+        mMap.loadTexture("../../src/Map3.png");
+        mPlayer.setPosition({1150, 565});
+
     }
 }

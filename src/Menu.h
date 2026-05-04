@@ -22,7 +22,7 @@ public:
     const int mMaxMenuOptions = 2;
     std::vector<sf::Text> mMenuOptions;
     Menu();
-    void init();
+    void init(float x, float y);
     void draw(sf::RenderWindow &window);
     void menuLoadTexture(const std::string &filename);
     void setPosition(sf::Vector2f position);

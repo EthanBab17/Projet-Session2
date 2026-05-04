@@ -9,17 +9,14 @@ Menu::Menu() : mSprite(mTexture){
     mSprite.setScale({2.15f, 2.4f});
     mSourceRect = sf::IntRect({0, 0}, {900, 507});
     mCurrentMenuIndex = 0;
-
     if (!mFont.openFromFile("../../src/RetroText.ttf")) {
         std::cerr << "ERREUR : Police introuvable !" << std::endl;
     }
-
-    // On stocke les mots simples
     mString.push_back("Jouer");
     mString.push_back("Quitter");
 }
 
-void Menu::init() {
+void Menu::init(float x, float y) {
     mButtons.clear();
     mMenuOptions.clear();
 
@@ -30,8 +27,8 @@ void Menu::init() {
         rect.setOutlineColor(sf::Color::White);
 
         // Calcul de la position (centré horizontalement à 450px si fenêtre de 900px)
-        float posX = 450.f - (rect.getSize().x / 2.f);
-        float posY = 200.f + (i * 100.f);
+        float posX = x - (rect.getSize().x / 2.f);
+        float posY = y + (i * 100.f);
         rect.setPosition({posX, posY});
         mButtons.push_back(rect);
 
