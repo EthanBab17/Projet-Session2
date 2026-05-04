@@ -7,5 +7,5 @@
 Door::Door() {
     mhitboxes.clear();
     mhitboxes.push_back(sf::FloatRect({1200, 657}, {100, 15}));
-    mhitboxes.push_back(sf::FloatRect({0, 1150}, {1200, 100}));
+    mhitboxes.push_back(sf::FloatRect({749, 1133}, {470, 100}));
 }
