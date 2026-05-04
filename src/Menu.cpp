@@ -9,20 +9,63 @@ Menu::Menu() : mSprite(mTexture){
     mSprite.setScale({2.15f, 2.4f});
     mSourceRect = sf::IntRect({0, 0}, {900, 507});
     mCurrentMenuIndex = 0;
-    if (!mFont.openFromFile("../../src/RetroText.ttf")) {
-        std::cerr << "ERREUR CRITIQUE : Impossible de trouver la police !" << std::endl;
-        std::cerr << "Verifie que le fichier est bien dans src/fonts/arial.ttf" << std::endl;
 
-        // 2. On ferme le programme proprement au lieu de laisser crash plus tard
-        exit(1);
+    if (!mFont.openFromFile("../../src/RetroText.ttf")) {
+        std::cerr << "ERREUR : Police introuvable !" << std::endl;
     }
-    sf::Font m_font;
-    mMenuOptions.push_back("Jouer");
-    mMenuOptions.push_back("Quitter");
+
+    // On stocke les mots simples
+    mString.push_back("Jouer");
+    mString.push_back("Quitter");
 }
+
+void Menu::init() {
+    mButtons.clear();
+    mMenuOptions.clear();
+
+    for (int i = 0; i < mString.size(); ++i) {
+        sf::RectangleShape rect({250.f, 60.f});
+        rect.setFillColor(sf::Color(50, 50, 50, 200));
+        rect.setOutlineThickness(2);
+        rect.setOutlineColor(sf::Color::White);
+
+        // Calcul de la position (centré horizontalement à 450px si fenêtre de 900px)
+        float posX = 450.f - (rect.getSize().x / 2.f);
+        float posY = 200.f + (i * 100.f);
+        rect.setPosition({posX, posY});
+        mButtons.push_back(rect);
+
+        sf::Text txt(mFont, mString[i], 30);
+        txt.setFillColor(sf::Color::White);
+
+        sf::FloatRect bounds = txt.getLocalBounds();
+        txt.setOrigin({bounds.position.x + bounds.size.x / 2.f,
+                       bounds.position.y + bounds.size.y / 2.f});
+        txt.setPosition({rect.getPosition().x + (rect.getSize().x / 2.f),
+                         rect.getPosition().y + (rect.getSize().y / 2.f)});
+
+        mMenuOptions.push_back(txt);
+    }
+}
+
 
 void Menu::draw(sf::RenderWindow &window) {
     window.draw(mSprite);
+    for (int i = 0; i < mButtons.size(); ++i) {
+        if (i == mCurrentMenuIndex) {
+            mButtons[i].setOutlineColor(sf::Color::Green);
+            mButtons[i].setOutlineThickness(4);
+            mMenuOptions[i].setFillColor(sf::Color::Green);
+        }
+        else {
+            mButtons[i].setOutlineColor(sf::Color::White);
+            mButtons[i].setOutlineThickness(2);
+            mMenuOptions[i].setFillColor(sf::Color::White);
+        }
+
+        window.draw(mButtons[i]);
+        window.draw(mMenuOptions[i]);
+    }
 }
 
 void Menu::menuLoadTexture(const std::string &filename) {

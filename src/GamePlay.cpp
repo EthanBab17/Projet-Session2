@@ -23,6 +23,7 @@ GamePlay::GamePlay()
     mMap.mCurrentMapIndex = 0;
     mMap.setPosition({0.f,0.f});
     mMenu.menuLoadTexture("../../src/Map2.png");
+    mMenu.init();
     mMenu.setPosition({0.f, 0.f});
     inMenu = true;
 }
@@ -112,34 +113,6 @@ void GamePlay::render() {
     mWindow.clear();
     if (inMenu) {
         mMenu.draw(mWindow);
-        for (int i = 0; i < mMenu.mMaxMenuOptions; ++i) {
-            sf::RectangleShape button({200.f, 50.f});
-            sf::Vector2f position = {400.f, 200.f + (i * 70.f)};
-            button.setPosition(position);
-
-            if (i == mMenu.mCurrentMenuIndex) {
-                button.setFillColor(sf::Color::Yellow);
-            }else {
-                button.setFillColor(sf::Color(100, 100, 100));
-            }
-            mWindow.draw(button);
-            sf::Text text(mMenu.mFont);
-            text.setString(mMenu.mMenuOptions[i]);
-            text.setCharacterSize(24);
-            text.setFillColor(sf::Color::White);
-
-            // 3. CENTRAGE DU TEXTE
-            // On récupère la taille du texte pour le placer pile au milieu
-            sf::FloatRect textBounds = text.getGlobalBounds();
-
-            // Calcul : Position du bouton + (Taille bouton / 2) - (Taille texte / 2)
-            float textX = position.x + (200.f / 2.f) - (textBounds.position.x / 2.f);
-            float textY = position.y + (50.f / 2.f) - (textBounds.position.y); // Ajustement Y subtil
-
-            text.setPosition({textX, textY});
-
-            mWindow.draw(text);
-        }
     }else {
         mMap.draw(mWindow);
         mPlayer.draw(mWindow);
@@ -161,14 +134,15 @@ void GamePlay::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
         }
     }
     if (!inMenu) {
-        if (key == sf::Keyboard::Key::W)
+        if (key == sf::Keyboard::Key::W  || key == sf::Keyboard::Key::Up) {
             mIsMovingUp = isPressed;
-        else if (key == sf::Keyboard::Key::S)
+        }else if (key == sf::Keyboard::Key::S || key == sf::Keyboard::Key::Down) {
             mIsMovingDown = isPressed;
-        else if (key == sf::Keyboard::Key::A)
+        }else if (key == sf::Keyboard::Key::A || key == sf::Keyboard::Key::Left) {
             mIsMovingLeft = isPressed;
-        else if (key == sf::Keyboard::Key::D)
+        }else if (key == sf::Keyboard::Key::D || key == sf::Keyboard::Key::Right) {
             mIsMovingRight = isPressed;
+        }
     }
 }
 

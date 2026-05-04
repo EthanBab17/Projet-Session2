@@ -12,14 +12,17 @@ private:
     sf::Sprite mSprite;
     sf::IntRect mSourceRect;
     sf::Texture mTexture;
+    std::vector<std::string> mString;
 
 
 public:
+    std::vector<sf::RectangleShape> mButtons;
     sf::Font mFont;
     int mCurrentMenuIndex;
     const int mMaxMenuOptions = 2;
-    std::vector<std::string> mMenuOptions;
+    std::vector<sf::Text> mMenuOptions;
     Menu();
+    void init();
     void draw(sf::RenderWindow &window);
     void menuLoadTexture(const std::string &filename);
     void setPosition(sf::Vector2f position);
