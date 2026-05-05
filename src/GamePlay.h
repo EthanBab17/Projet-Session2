@@ -10,19 +10,25 @@
 #include <cmath>
 #include "Menu.h"
 #include "Door.h"
+#include "Pnj.h"
+#include "Rhaegal.h"
 
 class GamePlay {
 private:
     sf::RenderWindow mWindow;
     Player mPlayer;
+    Pnj mPnj;
+    Rhaegal mRhaegal;
     Map mMap;
     Menu mMenu;
     bool inMenu;
+    bool inCombat;
     Door mDoor;
     bool mIsMovingUp;
     bool mIsMovingDown;
     bool mIsMovingLeft;
     bool mIsMovingRight;
+    bool collisionDetected;
 private:
     void processEvents();
     void update();

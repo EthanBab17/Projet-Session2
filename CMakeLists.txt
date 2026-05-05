@@ -26,7 +26,11 @@ add_executable(CMakeSFMLProject src/main.cpp
         src/Menu.cpp
         src/Menu.h
         src/Door.cpp
-        src/Door.h)
+        src/Door.h
+        src/Rhaegal.cpp
+        src/Rhaegal.h
+        src/Pnj.cpp
+        src/Pnj.h)
 target_compile_features(CMakeSFMLProject PRIVATE cxx_std_17)
 target_link_libraries(CMakeSFMLProject PRIVATE sfml-graphics)
 

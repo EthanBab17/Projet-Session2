@@ -11,12 +11,17 @@ GamePlay::GamePlay()
     , mIsMovingLeft(false)
     , mIsMovingRight(false)
     , mPlayer()
+    ,mPnj()
+    ,mRhaegal()
     , mMap()
     , mMenu()
     , mDoor()
 {
     mPlayer.loadTexture("../../src/Player.png");
     mPlayer.setPosition({860.f, 0.f});
+    mPnj.loadTexture("../../src/Master.png");
+    // mRhaegal.loadTexture("../../src/Rhaegal.png");
+    // mRhaegal.setPosition({860.f, 600.f});
     mWindow.setFramerateLimit(60);
     mMap.loadTexture("../../src/Map1.png");
     mMap.mCurrentMapIndex = 0;
@@ -27,6 +32,7 @@ GamePlay::GamePlay()
     mMenu.init(lenght,width);
     mMenu.setPosition({0.f, 0.f});
     inMenu = true;
+    inCombat = false;
 }
 
 
@@ -83,7 +89,7 @@ void GamePlay::update() {
 
         if (mMap.mCurrentMapIndex < mMap.mMapsHitboxes.size()) {
             for (const auto& wall : mMap.mMapsHitboxes[mMap.mCurrentMapIndex]) {
-                bool collisionDetected = false;
+                 collisionDetected = false;
                 for (const auto& wall : mMap.mMapsHitboxes[mMap.mCurrentMapIndex]) {
                     if (mPlayer.mhitbox.findIntersection(wall)) {
                         collisionDetected = true;
@@ -115,6 +121,15 @@ void GamePlay::update() {
         if (mPlayer.mhitbox.findIntersection(mDoor.mhitboxes[1]) && mMap.mCurrentMapIndex == 3) {
             HouseOut();
         }
+        if (mPlayer.mhitbox.findIntersection(mPnj.mhitboxes[0])) {
+            collisionDetected = true;
+            mPlayer.setPosition(oldPosition);
+            mPlayer.mhitbox.position.x = (oldPosition.x + 20);
+            mPlayer.mhitbox.position.y = (oldPosition.y + 100);
+        }
+        if (mPlayer.mhitbox.findIntersection(mPnj.mhitboxes[1]) && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::F)) {
+            inCombat = true;
+        }
     }
 }
 void GamePlay::render() {
@@ -122,8 +137,18 @@ void GamePlay::render() {
     if (inMenu) {
         mMenu.draw(mWindow);
     }else {
-        mMap.draw(mWindow);
-        mPlayer.draw(mWindow);
+        if (inCombat) {
+            // m_combatSystem.draw(mWindow);
+
+            mWindow.clear(sf::Color::Red);
+        }else {
+            mMap.draw(mWindow);
+            if (mMap.mCurrentMapIndex == 3) {
+                mPnj.draw(mWindow);
+            }
+            mPlayer.draw(mWindow);
+        // mRhaegal.draw(mWindow);
+    }
     }
     mWindow.display();
 }
@@ -149,6 +174,9 @@ void GamePlay::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
             mIsMovingLeft = isPressed;
         }else if (key == sf::Keyboard::Key::D || key == sf::Keyboard::Key::Right) {
             mIsMovingRight = isPressed;
+        }
+        if (key == sf::Keyboard::Key::P) {
+            mRhaegal.GainExp(50);
         }
     }
 }
@@ -189,6 +217,8 @@ void GamePlay::HouseIn() {
     if (mMap.mCurrentMapIndex < mMap.mMapsHitboxes.size()) {
         mMap.mCurrentMapIndex=3;
         mMap.loadTexture("../../src/House.png");
+        mPnj.setPosition({1014,667});
+        mPnj.initPnj();
         float windowlength = static_cast<float>(mWindow.getSize().x);
         float windowwidth = static_cast<float>(mWindow.getSize().y);
         mPlayer.setPosition({windowlength /2, windowwidth - 250.f});
