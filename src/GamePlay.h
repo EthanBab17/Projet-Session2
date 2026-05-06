@@ -12,6 +12,8 @@
 #include "Door.h"
 #include "Pnj.h"
 #include "Rhaegal.h"
+#include "RenderText.h"
+#include "Fight.h"
 
 class GamePlay {
 private:
@@ -20,9 +22,11 @@ private:
     Pnj mPnj;
     Rhaegal mRhaegal;
     Map mMap;
+    RenderText mRenderText;
     Menu mMenu;
     bool inMenu;
-    bool inCombat;
+    Fight mFight;
+    bool inFight;
     Door mDoor;
     bool mIsMovingUp;
     bool mIsMovingDown;

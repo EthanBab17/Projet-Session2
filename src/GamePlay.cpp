@@ -10,29 +10,25 @@ GamePlay::GamePlay()
     , mIsMovingDown(false)
     , mIsMovingLeft(false)
     , mIsMovingRight(false)
-    , mPlayer()
-    ,mPnj()
-    ,mRhaegal()
-    , mMap()
-    , mMenu()
-    , mDoor()
 {
-    mPlayer.loadTexture("../../src/Player.png");
+    mPlayer.loadTexture("../../src/Sprite/Player.png");
     mPlayer.setPosition({860.f, 0.f});
-    mPnj.loadTexture("../../src/Master.png");
+    mPnj.loadTexture("../../src/Sprite/Master.png");
     // mRhaegal.loadTexture("../../src/Rhaegal.png");
     // mRhaegal.setPosition({860.f, 600.f});
     mWindow.setFramerateLimit(60);
-    mMap.loadTexture("../../src/Map1.png");
+    mMap.loadTexture("../../src/Sprite/Map1.png");
     mMap.mCurrentMapIndex = 0;
     mMap.setPosition({0.f,0.f});
-    mMenu.menuLoadTexture("../../src/Map2.png");
+    mFight.CombatLoadTexture("../../src/Sprite/FightSprite.png");
+    mFight.menuFight();
+    mMenu.menuLoadTexture("../../src/Sprite/Map2.png");
     float lenght = (static_cast<float>(mWindow.getSize().x)/2);
     float width = ((static_cast<float>(mWindow.getSize().y)/2)-100.f);
     mMenu.init(lenght,width);
     mMenu.setPosition({0.f, 0.f});
     inMenu = true;
-    inCombat = false;
+    inFight = false;
 }
 
 
@@ -62,7 +58,7 @@ void GamePlay::processEvents() {
         }
 }
 void GamePlay::update() {
-    if (inMenu) {
+    if (inMenu || inFight) {
 
     }else {
         sf::Vector2f oldPosition = mPlayer.getPosition();
@@ -121,14 +117,17 @@ void GamePlay::update() {
         if (mPlayer.mhitbox.findIntersection(mDoor.mhitboxes[1]) && mMap.mCurrentMapIndex == 3) {
             HouseOut();
         }
-        if (mPlayer.mhitbox.findIntersection(mPnj.mhitboxes[0])) {
+        if (mPlayer.mhitbox.findIntersection(mPnj.mPnjHitboxes[0][0]) && mMap.mCurrentMapIndex == 3) {
             collisionDetected = true;
             mPlayer.setPosition(oldPosition);
             mPlayer.mhitbox.position.x = (oldPosition.x + 20);
             mPlayer.mhitbox.position.y = (oldPosition.y + 100);
         }
-        if (mPlayer.mhitbox.findIntersection(mPnj.mhitboxes[1]) && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::F)) {
-            inCombat = true;
+        if (mPlayer.mhitbox.findIntersection(mPnj.mPnjHitboxes[0][1]) && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::F) && mMap.mCurrentMapIndex == 3){
+               inFight = true;
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::C)) {
+            inFight = true;
         }
     }
 }
@@ -137,14 +136,18 @@ void GamePlay::render() {
     if (inMenu) {
         mMenu.draw(mWindow);
     }else {
-        if (inCombat) {
+        if (inFight) {
             // m_combatSystem.draw(mWindow);
-
-            mWindow.clear(sf::Color::Red);
+            mFight.draw(mWindow);
+            // mWindow.clear(sf::Color::Red);
         }else {
             mMap.draw(mWindow);
             if (mMap.mCurrentMapIndex == 3) {
                 mPnj.draw(mWindow);
+            }
+            if (mPlayer.mhitbox.findIntersection(mPnj.mhitboxes[1])) {
+                float width = ((static_cast<float>(mWindow.getSize().y)-100.f));
+                mRenderText.CombatText(0, width, mWindow);
             }
             mPlayer.draw(mWindow);
         // mRhaegal.draw(mWindow);
@@ -166,6 +169,18 @@ void GamePlay::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
         }
     }
     if (!inMenu) {
+        if (inFight && isPressed) {
+            if (key == sf::Keyboard::Key::Up) {
+                mFight.mCurrentFightIndex = (mFight.mCurrentFightIndex - 1 + mFight.mMaxFightOptions) % mFight.mMaxFightOptions;
+            }
+            if (key == sf::Keyboard::Key::Down) {
+                mFight.mCurrentFightIndex = (mFight.mCurrentFightIndex + 1) % mFight.mMaxFightOptions;
+            }
+            if (key == sf::Keyboard::Key::Enter){
+                if (mFight.mCurrentFightIndex == 0) mFight.ChooseAction();
+                if (mFight.mCurrentFightIndex == 2) inFight = false;
+            }
+        }
         if (key == sf::Keyboard::Key::W  || key == sf::Keyboard::Key::Up) {
             mIsMovingUp = isPressed;
         }else if (key == sf::Keyboard::Key::S || key == sf::Keyboard::Key::Down) {
@@ -176,7 +191,7 @@ void GamePlay::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
             mIsMovingRight = isPressed;
         }
         if (key == sf::Keyboard::Key::P) {
-            mRhaegal.GainExp(50);
+            mRhaegal.gainExp(50);
         }
     }
 }
@@ -184,7 +199,7 @@ void GamePlay::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
 void GamePlay::map1Down() {
     mMap.mCurrentMapIndex=0;
     if (mMap.mCurrentMapIndex < mMap.mMapsHitboxes.size()) {
-        mMap.loadTexture("../../src/Map1.png");
+        mMap.loadTexture("../../src/Sprite/Map1.png");
         float windowHeight = static_cast<float>(mWindow.getSize().y);
         mPlayer.setPosition({ mPlayer.getPosition().x,   windowHeight - 1200.f});
     }
@@ -192,7 +207,7 @@ void GamePlay::map1Down() {
 void GamePlay::map1Left() {
     mMap.mCurrentMapIndex=0;
     if (mMap.mCurrentMapIndex < mMap.mMapsHitboxes.size()) {
-        mMap.loadTexture("../../src/Map1.png");
+        mMap.loadTexture("../../src/Sprite/Map1.png");
         float windowlength = static_cast<float>(mWindow.getSize().x);
         mPlayer.setPosition({windowlength - 70.f, mPlayer.getPosition().y});
     }
@@ -200,7 +215,7 @@ void GamePlay::map1Left() {
 void GamePlay::map2() {
     mMap.mCurrentMapIndex=1;
     if (mMap.mCurrentMapIndex < mMap.mMapsHitboxes.size()) {
-        mMap.loadTexture("../../src/Map2.png");
+        mMap.loadTexture("../../src/Sprite/Map2.png");
         float windowHeight = static_cast<float>(mWindow.getSize().y);
         mPlayer.setPosition({ mPlayer.getPosition().x, windowHeight - 200.f });
     }
@@ -208,7 +223,7 @@ void GamePlay::map2() {
 void GamePlay::map3() {
     mMap.mCurrentMapIndex=2;
     if (mMap.mCurrentMapIndex < mMap.mMapsHitboxes.size()) {
-        mMap.loadTexture("../../src/Map3.png");
+        mMap.loadTexture("../../src/Sprite/Map3.png");
         float windowlength = static_cast<float>(mWindow.getSize().x);
         mPlayer.setPosition({windowlength - 1890.f, mPlayer.getPosition().y});
     }
@@ -216,9 +231,9 @@ void GamePlay::map3() {
 void GamePlay::HouseIn() {
     if (mMap.mCurrentMapIndex < mMap.mMapsHitboxes.size()) {
         mMap.mCurrentMapIndex=3;
-        mMap.loadTexture("../../src/House.png");
-        mPnj.setPosition({1014,667});
-        mPnj.initPnj();
+        mMap.loadTexture("../../src/Sprite/House.png");
+        mPnj.setPosition({950,600});
+        mPnj.initPnj(0);
         float windowlength = static_cast<float>(mWindow.getSize().x);
         float windowwidth = static_cast<float>(mWindow.getSize().y);
         mPlayer.setPosition({windowlength /2, windowwidth - 250.f});
@@ -227,8 +242,9 @@ void GamePlay::HouseIn() {
 void GamePlay::HouseOut() {
     if (mMap.mCurrentMapIndex < mMap.mMapsHitboxes.size()) {
         mMap.mCurrentMapIndex=2;
-        mMap.loadTexture("../../src/Map3.png");
+        mMap.loadTexture("../../src/Sprite/Map3.png");
         mPlayer.setPosition({1150, 565});
+        mPnj.initPnj(1);
 
     }
 }

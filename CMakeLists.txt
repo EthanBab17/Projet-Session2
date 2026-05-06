@@ -30,7 +30,11 @@ add_executable(CMakeSFMLProject src/main.cpp
         src/Rhaegal.cpp
         src/Rhaegal.h
         src/Pnj.cpp
-        src/Pnj.h)
+        src/Pnj.h
+        src/RenderText.cpp
+        src/RenderText.h
+        src/Fight.cpp
+        src/Fight.h)
 target_compile_features(CMakeSFMLProject PRIVATE cxx_std_17)
 target_link_libraries(CMakeSFMLProject PRIVATE sfml-graphics)
 

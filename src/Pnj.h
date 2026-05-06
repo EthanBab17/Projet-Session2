@@ -8,8 +8,9 @@
 
 class Pnj : public Entities{
     public:
+    std::vector<std::vector<sf::FloatRect>> mPnjHitboxes;
     Pnj();
-    void initPnj();
+    void initPnj(int currentPnj);
 };
 
 

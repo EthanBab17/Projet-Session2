@@ -6,6 +6,7 @@
 #define CMAKESFMLPROJECT_RHAEGAL_H
 #include "Entities.h"
 #include <cmath>
+#include <list>
 
 class Rhaegal : public Entities{
 private:
@@ -14,11 +15,13 @@ private:
     int atk;
     int pv;
     public:
+    std::list<int> mAttacks;
+
     Rhaegal();
-    int FireBall();
-    int wingSlash();
-    int DracoMeteore();
-    void GainExp(double exp);
+    void fireBall();
+    void wingSlash();
+    void dracoMeteore();
+    void gainExp(double exp);
 };
 
 

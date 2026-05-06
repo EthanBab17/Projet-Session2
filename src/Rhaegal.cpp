@@ -11,28 +11,32 @@ Rhaegal::Rhaegal() {
     atk = 10;
     pv = 100;
     level = 1;
-    currentExp = 1;
+    currentExp = 0;
+    mAttacks.clear();
+    fireBall();
+    wingSlash();
+    dracoMeteore();
 }
 
-int Rhaegal::FireBall() {
+void Rhaegal::fireBall() {
     int damages = 0;
     damages= atk * level;
-    return damages;
+    mAttacks.push_back(damages);
 }
-int Rhaegal::wingSlash() {
+void Rhaegal::wingSlash() {
     int damages = 0;
     damages= atk * level + 5;
-    return damages;
+    mAttacks.push_back(damages);
 }
-int Rhaegal::DracoMeteore() {
+void Rhaegal::dracoMeteore() {
     int damages = 0;
     damages= 2 * atk + level;
-    return damages;
+    mAttacks.push_back(damages);
 }
-void Rhaegal::GainExp(double exp) {
+void Rhaegal::gainExp(double exp) {
     currentExp += exp;
     if (currentExp > (exp * std::pow(level, 2))) {
         level++;
+        std::cout << "Rhaegal level (" << level << ")" << std::endl;
     }
-    std::cout << "Rhaegal level (" << level << ")" << std::endl;
 }

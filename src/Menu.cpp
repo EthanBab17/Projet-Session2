@@ -20,13 +20,11 @@ void Menu::init(float x, float y) {
     mButtons.clear();
     mMenuOptions.clear();
 
-    for (int i = 0; i < mString.size(); ++i) {
+    for (size_t i = 0; i < mString.size(); ++i) {
         sf::RectangleShape rect({250.f, 60.f});
         rect.setFillColor(sf::Color(50, 50, 50, 200));
         rect.setOutlineThickness(2);
         rect.setOutlineColor(sf::Color::White);
-
-        // Calcul de la position (centré horizontalement à 450px si fenêtre de 900px)
         float posX = x - (rect.getSize().x / 2.f);
         float posY = y + (i * 100.f);
         rect.setPosition({posX, posY});
@@ -48,7 +46,7 @@ void Menu::init(float x, float y) {
 
 void Menu::draw(sf::RenderWindow &window) {
     window.draw(mSprite);
-    for (int i = 0; i < mButtons.size(); ++i) {
+    for (size_t i = 0; i < mButtons.size(); ++i) {
         if (i == mCurrentMenuIndex) {
             mButtons[i].setOutlineColor(sf::Color::Green);
             mButtons[i].setOutlineThickness(4);
