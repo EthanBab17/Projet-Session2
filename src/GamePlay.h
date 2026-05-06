@@ -5,6 +5,7 @@
 #ifndef CMAKESFMLPROJECT_GAMEPLAY_H
 #define CMAKESFMLPROJECT_GAMEPLAY_H
 #include <SFML/Graphics.hpp>
+#include <fstream>
 #include "Player.h"
 #include "Map.h"
 #include <cmath>
@@ -21,12 +22,15 @@ private:
     Player mPlayer;
     Pnj mPnj;
     Rhaegal mRhaegal;
+    Rhaegal mRhaegal2;
     Map mMap;
     RenderText mRenderText;
     Menu mMenu;
     bool inMenu;
     Fight mFight;
-    bool inFight;
+    bool inMenuFight;
+    bool playerTurn = true;
+    sf::Clock mTurnClock;
     Door mDoor;
     bool mIsMovingUp;
     bool mIsMovingDown;

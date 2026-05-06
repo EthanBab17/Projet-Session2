@@ -12,31 +12,46 @@ Rhaegal::Rhaegal() {
     pv = 100;
     level = 1;
     currentExp = 0;
+    mAttackName.push_back("FireBall");
+    mAttackName.push_back("WingSlash");
+    mAttackName.push_back("DracoMeteore");
     mAttacks.clear();
     fireBall();
     wingSlash();
     dracoMeteore();
 }
 
-void Rhaegal::fireBall() {
+int Rhaegal::fireBall() {
     int damages = 0;
     damages= atk * level;
-    mAttacks.push_back(damages);
+    return damages;
 }
-void Rhaegal::wingSlash() {
+int Rhaegal::wingSlash() {
     int damages = 0;
     damages= atk * level + 5;
-    mAttacks.push_back(damages);
+    return damages;
 }
-void Rhaegal::dracoMeteore() {
+int Rhaegal::dracoMeteore() {
     int damages = 0;
     damages= 2 * atk + level;
-    mAttacks.push_back(damages);
+    return damages;
 }
 void Rhaegal::gainExp(double exp) {
     currentExp += exp;
-    if (currentExp > (exp * std::pow(level, 2))) {
+    if (currentExp >= (100 * std::pow(level, 2))) {
         level++;
         std::cout << "Rhaegal level (" << level << ")" << std::endl;
     }
+}
+int Rhaegal::getPv() {
+    return pv;
+}
+void Rhaegal::takeDamage(int damage) {
+    this->pv = (pv- damage);
+}
+void Rhaegal::resetPv() {
+    pv = 100;
+}
+int Rhaegal::getLevel() {
+    return level;
 }

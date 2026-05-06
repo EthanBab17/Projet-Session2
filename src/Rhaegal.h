@@ -15,13 +15,19 @@ private:
     int atk;
     int pv;
     public:
+    int damageTaken;
+    std::list<std::string> mAttackName;
     std::list<int> mAttacks;
 
     Rhaegal();
-    void fireBall();
-    void wingSlash();
-    void dracoMeteore();
+    int fireBall();
+    int wingSlash();
+    int dracoMeteore();
     void gainExp(double exp);
+    void takeDamage(int damge);
+    int getPv();
+    void resetPv();
+    int getLevel();
 };
 
 

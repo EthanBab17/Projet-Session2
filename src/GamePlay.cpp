@@ -9,26 +9,31 @@ GamePlay::GamePlay()
     , mIsMovingUp(false)
     , mIsMovingDown(false)
     , mIsMovingLeft(false)
-    , mIsMovingRight(false)
-{
+    , mIsMovingRight(false) {
     mPlayer.loadTexture("../../src/Sprite/Player.png");
     mPlayer.setPosition({860.f, 0.f});
     mPnj.loadTexture("../../src/Sprite/Master.png");
-    // mRhaegal.loadTexture("../../src/Rhaegal.png");
-    // mRhaegal.setPosition({860.f, 600.f});
+    mRhaegal.loadTexture("../../src/Sprite/Rhaegal.png");
+    mRhaegal.setPosition({100.f, 50.f});
+    mRhaegal.mSprite.setScale({1.f, 1.f});
+
+    mRhaegal2.loadTexture("../../src/Sprite/Rhaegal.png");
+    mRhaegal2.setPosition({1700.f, -120.f});
+    mRhaegal2.mSprite.setScale({-0.7f, 0.7f});
+
     mWindow.setFramerateLimit(60);
     mMap.loadTexture("../../src/Sprite/Map1.png");
     mMap.mCurrentMapIndex = 0;
     mMap.setPosition({0.f,0.f});
     mFight.CombatLoadTexture("../../src/Sprite/FightSprite.png");
-    mFight.menuFight();
+    mFight.menuFight({"Attacks","Team", "Run"});
     mMenu.menuLoadTexture("../../src/Sprite/Map2.png");
     float lenght = (static_cast<float>(mWindow.getSize().x)/2);
     float width = ((static_cast<float>(mWindow.getSize().y)/2)-100.f);
     mMenu.init(lenght,width);
     mMenu.setPosition({0.f, 0.f});
     inMenu = true;
-    inFight = false;
+    inMenuFight = false;
 }
 
 
@@ -58,12 +63,32 @@ void GamePlay::processEvents() {
         }
 }
 void GamePlay::update() {
-    if (inMenu || inFight) {
+    if (inMenu) {
 
+    }else if(inMenuFight) {
+            if (!playerTurn) {
+
+                if (mTurnClock.getElapsedTime().asSeconds() > 1.5f) {
+
+                    int damage = 10; // Remplace par une vraie fonction mEnemy.attack(
+                    mRhaegal.takeDamage(damage);
+
+                    std::cout << "L'ennemi attaque ! Vos PV : " << mRhaegal.getPv() << std::endl;
+                    mFight.m_currentFightState = FightState::MainMenu;
+                    mFight.menuFight({"Attacks", "Team", "Run"});
+                    playerTurn = true;
+                }
+            }
+        if (mRhaegal.getPv() < 0 || mRhaegal2.getPv() < 0) {
+            inMenuFight = false;
+            mRhaegal.resetPv();
+            mRhaegal2.resetPv();
+            if (mRhaegal.getPv() > 0) {
+                mRhaegal.gainExp(100);
+            }
+        }
     }else {
         sf::Vector2f oldPosition = mPlayer.getPosition();
-        std::cout << "Nombre de murs sur cette map : " << mMap.mMapsHitboxes[mMap.mCurrentMapIndex].size() << std::endl;
-        std::cout << mPlayer.getPosition().x << " " << mPlayer.getPosition().y << std::endl;
         sf::Vector2f movement(0.f, 0.f);
         if (mIsMovingUp) {
             movement.y -= 5.f;
@@ -85,7 +110,7 @@ void GamePlay::update() {
 
         if (mMap.mCurrentMapIndex < mMap.mMapsHitboxes.size()) {
             for (const auto& wall : mMap.mMapsHitboxes[mMap.mCurrentMapIndex]) {
-                 collisionDetected = false;
+                collisionDetected = false;
                 for (const auto& wall : mMap.mMapsHitboxes[mMap.mCurrentMapIndex]) {
                     if (mPlayer.mhitbox.findIntersection(wall)) {
                         collisionDetected = true;
@@ -124,10 +149,10 @@ void GamePlay::update() {
             mPlayer.mhitbox.position.y = (oldPosition.y + 100);
         }
         if (mPlayer.mhitbox.findIntersection(mPnj.mPnjHitboxes[0][1]) && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::F) && mMap.mCurrentMapIndex == 3){
-               inFight = true;
+            inMenuFight = true;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::C)) {
-            inFight = true;
+            inMenuFight = true;
         }
     }
 }
@@ -136,9 +161,9 @@ void GamePlay::render() {
     if (inMenu) {
         mMenu.draw(mWindow);
     }else {
-        if (inFight) {
+        if (inMenuFight) {
             // m_combatSystem.draw(mWindow);
-            mFight.draw(mWindow);
+            mFight.draw(mWindow, mRhaegal, mRhaegal2);
             // mWindow.clear(sf::Color::Red);
         }else {
             mMap.draw(mWindow);
@@ -164,21 +189,65 @@ void GamePlay::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
             mMenu.mCurrentMenuIndex = (mMenu.mCurrentMenuIndex + 1) % mMenu.mMaxMenuOptions;
         }
         if (key == sf::Keyboard::Key::Enter) {
-            if (mMenu.mCurrentMenuIndex == 0) inMenu = false;
-            if (mMenu.mCurrentMenuIndex == 1) mWindow.close();
+            if (mMenu.mCurrentMenuIndex == 0) {
+                inMenu = false;
+            }
+            if (mMenu.mCurrentMenuIndex == 1) {
+                mWindow.close();
+                std::ofstream dataRecording("data.csv");
+                if (dataRecording.is_open()) {
+                    dataRecording << mMap.mCurrentMapIndex;
+                    dataRecording << mRhaegal.getPv();
+                }
+            }
         }
     }
     if (!inMenu) {
-        if (inFight && isPressed) {
+        if (inMenuFight && isPressed && playerTurn) {
             if (key == sf::Keyboard::Key::Up) {
                 mFight.mCurrentFightIndex = (mFight.mCurrentFightIndex - 1 + mFight.mMaxFightOptions) % mFight.mMaxFightOptions;
             }
             if (key == sf::Keyboard::Key::Down) {
                 mFight.mCurrentFightIndex = (mFight.mCurrentFightIndex + 1) % mFight.mMaxFightOptions;
             }
-            if (key == sf::Keyboard::Key::Enter){
-                if (mFight.mCurrentFightIndex == 0) mFight.ChooseAction();
-                if (mFight.mCurrentFightIndex == 2) inFight = false;
+            if (key == sf::Keyboard::Key::Enter) {
+                if (mFight.m_currentFightState == FightState::MainMenu) {
+                    if (mFight.mCurrentFightIndex == 0) {
+                        mFight.m_currentFightState = FightState::SelectAttack;
+                        mFight.menuFight({"FireBall", "wingSlash", "DracoMeteor", "Back"});
+                    }
+                    else if (mFight.mCurrentFightIndex == 1) {
+                        // Logique pour le menu "Team"
+                    }else if (mFight.mCurrentFightIndex == 2) {
+                        inMenuFight = false;
+                    }
+                }
+                else if (mFight.m_currentFightState == FightState::SelectAttack) {
+                    if (mFight.mCurrentFightIndex == 0) {
+                        mRhaegal2.takeDamage(mRhaegal.fireBall());
+                        std::cout << mRhaegal2.getPv() << std::endl;
+                        playerTurn = false;
+                        mTurnClock.restart();
+                    }
+                    if (mFight.mCurrentFightIndex == 1) {
+                        mRhaegal2.takeDamage(mRhaegal.wingSlash());
+                        std::cout << mRhaegal2.getPv() << std::endl;
+                        playerTurn = false;
+                        mTurnClock.restart();
+                    }
+                    if (mFight.mCurrentFightIndex == 2) {
+                        mRhaegal2.takeDamage(mRhaegal.dracoMeteore());
+                        std::cout << mRhaegal2.getPv() << std::endl;
+                        playerTurn = false;
+                        mTurnClock.restart();
+                    }
+                    if (mFight.mString[mFight.mCurrentFightIndex] == "Back") {
+                        mFight.m_currentFightState = FightState::MainMenu;
+                        mFight.menuFight({"Attack", "Team", "Run"});
+                        }
+                    } else {
+                        std::cout << "Lancement de l'attaque : " << mFight.mString[mFight.mCurrentFightIndex] << std::endl;
+                    }
             }
         }
         if (key == sf::Keyboard::Key::W  || key == sf::Keyboard::Key::Up) {

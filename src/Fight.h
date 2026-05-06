@@ -7,6 +7,10 @@
 #include <SFML/Graphics.hpp>
 #include  <iostream>
 #include "Rhaegal.h"
+enum class FightState {
+    MainMenu,
+    SelectAttack
+};
 
 class Fight {
 private:
@@ -14,18 +18,19 @@ private:
     sf::IntRect mSourceRect;
     sf::Texture mTexture;
     sf::Font mFont;
-    std::vector<std::string> mString;
     std::vector<sf::RectangleShape> mButtons;
     std::vector<sf::Text> mText;
     sf::RectangleShape mRect;
     sf::RectangleShape mRect2;
 public:
+    std::vector<std::string> mString;
+    FightState m_currentFightState = FightState::MainMenu;
     int mCurrentFightIndex;
     int mMaxFightOptions;
     Fight();
     void CombatLoadTexture(const std::string &filename);
-    void draw(sf::RenderWindow &window);
-    void menuFight();
+    void draw(sf::RenderWindow &window, Rhaegal &playerDragon, Rhaegal &enemyDragon);
+    void menuFight(const std::vector<std::string>& options);
     void ChooseAction();
 };
 
