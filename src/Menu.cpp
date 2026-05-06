@@ -12,8 +12,9 @@ Menu::Menu() : mSprite(mTexture){
     if (!mFont.openFromFile("../../src/RetroText.ttf")) {
         std::cerr << "ERREUR : Police introuvable !" << std::endl;
     }
-    mString.push_back("Jouer");
-    mString.push_back("Quitter");
+    mString.push_back("Play");
+    mString.push_back("Load Game");
+    mString.push_back("Quit");
 }
 
 void Menu::init(float x, float y) {
@@ -21,7 +22,7 @@ void Menu::init(float x, float y) {
     mMenuOptions.clear();
 
     for (size_t i = 0; i < mString.size(); ++i) {
-        sf::RectangleShape rect({250.f, 60.f});
+        sf::RectangleShape rect({300.f, 75.f});
         rect.setFillColor(sf::Color(50, 50, 50, 200));
         rect.setOutlineThickness(2);
         rect.setOutlineColor(sf::Color::White);

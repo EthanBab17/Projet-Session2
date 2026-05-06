@@ -170,7 +170,7 @@ void GamePlay::render() {
             if (mMap.mCurrentMapIndex == 3) {
                 mPnj.draw(mWindow);
             }
-            if (mPlayer.mhitbox.findIntersection(mPnj.mhitboxes[1])) {
+            if (mPlayer.mhitbox.findIntersection(mPnj.mPnjHitboxes[0][1])) {
                 float width = ((static_cast<float>(mWindow.getSize().y)-100.f));
                 mRenderText.CombatText(0, width, mWindow);
             }
@@ -193,12 +193,19 @@ void GamePlay::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
                 inMenu = false;
             }
             if (mMenu.mCurrentMenuIndex == 1) {
-                mWindow.close();
-                std::ofstream dataRecording("data.csv");
+                loadGame();
+                inMenu = false;
+            }
+            if (mMenu.mCurrentMenuIndex == 2) {
+                std::ofstream dataRecording("../../src/data.csv");
                 if (dataRecording.is_open()) {
-                    dataRecording << mMap.mCurrentMapIndex;
-                    dataRecording << mRhaegal.getPv();
+                    dataRecording << mMap.mCurrentMapIndex << ","
+                    << mPlayer.getPosition().x << ","
+                    << mPlayer.getPosition().y << ","
+                    << mRhaegal.getLevel() << ","
+                    << mRhaegal.getCurrentExp();
                 }
+                mWindow.close();
             }
         }
     }
@@ -315,5 +322,43 @@ void GamePlay::HouseOut() {
         mPlayer.setPosition({1150, 565});
         mPnj.initPnj(1);
 
+    }
+}
+void GamePlay::loadGame() {
+    std::ifstream loading("../../src/data.csv");
+    if (loading.is_open()) {
+        std::string line;
+        if (std::getline(loading, line)) {
+            std::stringstream ss(line);
+
+            std::string val;
+            std::getline(ss, val, ',');
+            mMap.mCurrentMapIndex = std::stoi(val);
+
+            std::getline(ss, val, ',');
+            float posX = std::stof(val);
+
+            std::getline(ss, val, ',');
+            float posY = std::stof(val);
+
+            mPlayer.setPosition({posX, posY});
+
+            if (mMap.mCurrentMapIndex == 1) mMap.loadTexture("../../src/Sprite/Map2.png");
+            else if (mMap.mCurrentMapIndex == 2) mMap.loadTexture("../../src/Sprite/Map3.png");
+            else if (mMap.mCurrentMapIndex == 3) {
+                mMap.loadTexture("../../src/Sprite/House.png");
+                mPnj.setPosition({950,600});
+                mPnj.initPnj(0);
+            }
+            else mMap.loadTexture("../../src/Sprite/Map1.png");
+
+            std::getline(ss, val, ',');
+            mRhaegal.setLevel(stoi(val));
+
+            std::getline(ss, val, ',');
+            mRhaegal.setCurrentExp(stoi(val));
+            std::cout << "Chargement reussi : Map " << mMap.mCurrentMapIndex << std::endl;
+        }
+        loading.close();
     }
 }

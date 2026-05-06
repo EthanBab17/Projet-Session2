@@ -27,7 +27,10 @@ private:
     void takeDamage(int damge);
     int getPv();
     void resetPv();
+    void setLevel(int level);
     int getLevel();
+    void setCurrentExp(int exp);
+    int getCurrentExp();
 };
 
 

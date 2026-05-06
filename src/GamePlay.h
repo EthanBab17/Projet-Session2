@@ -5,7 +5,9 @@
 #ifndef CMAKESFMLPROJECT_GAMEPLAY_H
 #define CMAKESFMLPROJECT_GAMEPLAY_H
 #include <SFML/Graphics.hpp>
+#include <string>
 #include <fstream>
+#include <sstream>
 #include "Player.h"
 #include "Map.h"
 #include <cmath>
@@ -37,7 +39,9 @@ private:
     bool mIsMovingLeft;
     bool mIsMovingRight;
     bool collisionDetected;
-private:
+public:
+    GamePlay();
+    void run();
     void processEvents();
     void update();
     void render();
@@ -48,9 +52,7 @@ private:
     void map3();
     void HouseIn();
     void HouseOut();
-public:
-    GamePlay();
-    void run();
+    void loadGame();
 };
 
 

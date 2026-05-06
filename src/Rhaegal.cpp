@@ -52,6 +52,16 @@ void Rhaegal::takeDamage(int damage) {
 void Rhaegal::resetPv() {
     pv = 100;
 }
+void Rhaegal::setLevel(int level) {
+    this->level = level;
+}
+
 int Rhaegal::getLevel() {
     return level;
+}
+int Rhaegal::getCurrentExp() {
+    return currentExp;
+}
+void Rhaegal::setCurrentExp(int exp) {
+    this-> currentExp = exp;
 }
