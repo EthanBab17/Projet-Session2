@@ -14,6 +14,7 @@
 #include "Menu.h"
 #include "Door.h"
 #include "Pnj.h"
+#include "Monster.h"
 #include "Rhaegal.h"
 #include "RenderText.h"
 #include "Fight.h"
@@ -23,7 +24,8 @@ private:
     sf::RenderWindow mWindow;
     Player mPlayer;
     Pnj mPnj;
-    Rhaegal mRhaegal;
+    std::vector<Monster*> mPlayerTeam;
+    int mActiveMonsterIndex = 0;
     Rhaegal mRhaegal2;
     Map mMap;
     RenderText mRenderText;

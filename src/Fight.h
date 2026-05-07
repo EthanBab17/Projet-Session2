@@ -6,10 +6,12 @@
 #define CMAKESFMLPROJECT_COMBAT_H
 #include <SFML/Graphics.hpp>
 #include  <iostream>
+#include "Monster.h"
 #include "Rhaegal.h"
 enum class FightState {
     MainMenu,
-    SelectAttack
+    SelectAttack,
+    SelectTeam
 };
 
 class Fight {
@@ -22,14 +24,16 @@ private:
     std::vector<sf::Text> mText;
     sf::RectangleShape mRect;
     sf::RectangleShape mRect2;
+    int mActiveMemberIndex = 0;
 public:
+    std::vector<Rhaegal> mTeam;
     std::vector<std::string> mString;
     FightState m_currentFightState = FightState::MainMenu;
     int mCurrentFightIndex;
     int mMaxFightOptions;
     Fight();
     void CombatLoadTexture(const std::string &filename);
-    void draw(sf::RenderWindow &window, Rhaegal &playerDragon, Rhaegal &enemyDragon);
+    void draw(sf::RenderWindow &window, Monster &monster, Rhaegal &enemyDragon);
     void menuFight(const std::vector<std::string>& options);
     void ChooseAction();
 };

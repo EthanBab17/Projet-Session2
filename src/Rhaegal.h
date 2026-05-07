@@ -4,33 +4,21 @@
 
 #ifndef CMAKESFMLPROJECT_RHAEGAL_H
 #define CMAKESFMLPROJECT_RHAEGAL_H
-#include "Entities.h"
+#include "Monster.h"
+#include <iostream>
 #include <cmath>
 #include <list>
 
-class Rhaegal : public Entities{
-private:
-    int level;
-    int currentExp;
-    int atk;
-    int pv;
+class Rhaegal : public Monster{
     public:
+    Rhaegal();
+
+    void attack(int moveIndex, Monster& target) override;
+
     int damageTaken;
     std::list<std::string> mAttackName;
     std::list<int> mAttacks;
 
-    Rhaegal();
-    int fireBall();
-    int wingSlash();
-    int dracoMeteore();
-    void gainExp(double exp);
-    void takeDamage(int damge);
-    int getPv();
-    void resetPv();
-    void setLevel(int level);
-    int getLevel();
-    void setCurrentExp(int exp);
-    int getCurrentExp();
 };
 
 

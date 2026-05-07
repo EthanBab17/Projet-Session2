@@ -34,7 +34,9 @@ add_executable(CMakeSFMLProject src/main.cpp
         src/RenderText.cpp
         src/RenderText.h
         src/Fight.cpp
-        src/Fight.h)
+        src/Fight.h
+        src/Monster.cpp
+        src/Monster.h)
 target_compile_features(CMakeSFMLProject PRIVATE cxx_std_17)
 target_link_libraries(CMakeSFMLProject PRIVATE sfml-graphics)
 

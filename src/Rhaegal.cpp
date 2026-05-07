@@ -3,65 +3,33 @@
 //
 
 #include "Rhaegal.h"
-Rhaegal::Rhaegal() {
-    mSprite.setOrigin({32.f, 32.f});
-    mSourceRect = sf::IntRect({0, 0}, {928, 1142});
-    mSprite.setScale({0.30f, 0.30f});
-    mhitbox = sf::FloatRect({0, 0}, {70, 55});
-    atk = 10;
+Rhaegal::Rhaegal() : Monster() {
+    mName = "Rhaegal";
     pv = 100;
     level = 1;
-    currentExp = 0;
-    mAttackName.push_back("FireBall");
-    mAttackName.push_back("WingSlash");
-    mAttackName.push_back("DracoMeteore");
-    mAttacks.clear();
-    fireBall();
-    wingSlash();
-    dracoMeteore();
+    atk = 10;
+    mAttackNames = {"FireBall", "WingSlash"};
+    loadTexture("../../src/Sprite/Rhaegal.png");
 }
 
-int Rhaegal::fireBall() {
-    int damages = 0;
-    damages= atk * level;
-    return damages;
-}
-int Rhaegal::wingSlash() {
-    int damages = 0;
-    damages= atk * level + 5;
-    return damages;
-}
-int Rhaegal::dracoMeteore() {
-    int damages = 0;
-    damages= 2 * atk + level;
-    return damages;
-}
-void Rhaegal::gainExp(double exp) {
-    currentExp += exp;
-    if (currentExp >= (100 * std::pow(level, 2))) {
-        level++;
-        std::cout << "Rhaegal level (" << level << ")" << std::endl;
+void Rhaegal::attack(int moveIndex, Monster& target) {
+    int damage = 0;
+
+    switch (moveIndex) {
+        case 0: // FireBall
+            damage = atk * level;
+            std::cout << mName << " lance une Boule de Feu !" << std::endl;
+            break;
+
+        case 1: // WingSlash
+            damage = (atk * level) + 5;
+            std::cout << mName << " utilise Tranche-Aile !" << std::endl;
+            break;
+
+        case 2: // DracoMeteore
+            damage = (atk * 2) + level;
+            std::cout << mName << " fait pleuvoir des meteores !" << std::endl;
+            break;
     }
-}
-int Rhaegal::getPv() {
-    return pv;
-}
-void Rhaegal::takeDamage(int damage) {
-    this->pv = (pv- damage);
-}
-void Rhaegal::resetPv() {
-    pv = 100;
-}
-void Rhaegal::setLevel(int level) {
-    this->level = level;
-}
-
-int Rhaegal::getLevel() {
-    return level;
-}
-int Rhaegal::getCurrentExp() {
-    return currentExp;
-}
-void Rhaegal::setCurrentExp(int exp) {
-    this-> currentExp = exp;
+    target.takeDamage(damage);
 }
