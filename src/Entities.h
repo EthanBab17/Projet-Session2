@@ -16,7 +16,7 @@ public:
     std::vector<sf::FloatRect> mhitboxes;
     sf::Vector2f mPosition;
 public:
-    Entities() : mSprite(mTexture){};
+    Entities():mSprite(mTexture){};
     virtual ~Entities() = default;
     void loadTexture(const std::string &filename);
     void draw(sf::RenderWindow &window);

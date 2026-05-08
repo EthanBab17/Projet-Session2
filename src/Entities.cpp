@@ -4,9 +4,10 @@
 
 #include "Entities.h"
 
+
 void Entities::loadTexture(const std::string &filename) {
     if (mTexture.loadFromFile(filename)) {
-        mSprite.setTexture(mTexture);
+        mSprite.setTexture(mTexture, true);
         mSprite.setTextureRect(mSourceRect);
     } else {
         std::cout << "Erreur de chargement de : " << filename << std::endl;

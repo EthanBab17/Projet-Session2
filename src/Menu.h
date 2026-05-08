@@ -19,7 +19,7 @@ public:
     std::vector<sf::RectangleShape> mButtons;
     sf::Font mFont;
     int mCurrentMenuIndex;
-    const int mMaxMenuOptions = 3;
+    const int mMaxMenuOptions = 4;
     std::vector<sf::Text> mMenuOptions;
     Menu();
     void init(float x, float y);

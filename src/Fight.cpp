@@ -4,13 +4,17 @@
 
 #include "Fight.h"
 
-Fight::Fight() : mSprite(mTexture){
+Fight::Fight() : mSprite(mTexture),mPv(mFont),mPv2(mFont){
     mSprite.setOrigin({0.f, 0.f});
     mSprite.setScale({1.62f, 1.35f});
     mSourceRect = sf::IntRect({0, 0}, {1195, 896});
     if (!mFont.openFromFile("../../src/RetroText.ttf")) {
         std::cerr << "ERREUR : Police introuvable !" << std::endl;
     }
+    mPv.setFont(mFont);
+    mPv.setCharacterSize(20);
+    mPv2.setFont(mFont);
+    mPv2.setCharacterSize(20);
     mRect.setPosition({0,700});
     mRect.setSize({1980,480});
     mRect.setFillColor(sf::Color(100,100,100,200));
@@ -32,21 +36,22 @@ void Fight::CombatLoadTexture(const std::string &filename) {
     }
 }
 
-void Fight::draw(sf::RenderWindow &window, Monster& monster, Rhaegal &enemyDragon) {
+void Fight::draw(sf::RenderWindow &window, Monster& monster, Rhaegal &enemyDragon) {//
     window.draw(mSprite);
     monster.draw(window);
     if (enemyDragon.getPv() > 0) {
         enemyDragon.draw(window);
     }
-    sf::Text pv(mFont, "LV." + std::to_string(mTeam[mActiveMemberIndex].getLevel()) +"HP: " + std::to_string(mTeam[mActiveMemberIndex].getPv()), 20);pv.setFillColor(sf::Color::Green);
-    pv.setPosition({50.f, 780.f});
-    sf::Text pv2(mFont, "HP: " + std::to_string(enemyDragon.getPv()), 20);
-    pv2.setFillColor(sf::Color::Red);
-    pv2.setPosition({1000.f, 50.f});
+    mPv.setString("LV." + std::to_string(monster.getLevel()) + "HP: "+ std::to_string(monster.getPv()));// //
+    mPv.setFillColor(sf::Color::Green);
+    mPv.setPosition({50.f, 780.f});
+    mPv2.setString("HP: " + std::to_string(enemyDragon.getPv()));
+    mPv2.setFillColor(sf::Color::Red);
+    mPv2.setPosition({1000.f, 50.f});
 
     window.draw(mRect);
-    window.draw(pv);
-    window.draw(pv2);
+    window.draw(mPv);
+    window.draw(mPv2);
     window.draw(mRect2);
     for (size_t i = 0; i < mButtons.size(); ++i) {
         if (i == mCurrentFightIndex) {

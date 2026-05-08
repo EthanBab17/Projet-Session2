@@ -8,8 +8,10 @@ Rhaegal::Rhaegal() : Monster() {
     pv = 100;
     level = 1;
     atk = 10;
-    mAttackNames = {"FireBall", "WingSlash"};
+    mAttackNames = {"FireBall", "WingSlash", "DracoMeteore"};
+    mSourceRect = sf::IntRect({0, 0}, {928, 1142});
     loadTexture("../../src/Sprite/Rhaegal.png");
+    damageTaken = 0;
 }
 
 void Rhaegal::attack(int moveIndex, Monster& target) {
@@ -29,6 +31,9 @@ void Rhaegal::attack(int moveIndex, Monster& target) {
         case 2: // DracoMeteore
             damage = (atk * 2) + level;
             std::cout << mName << " fait pleuvoir des meteores !" << std::endl;
+            break;
+        default:
+            damage = 0;
             break;
     }
     target.takeDamage(damage);

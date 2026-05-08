@@ -4,6 +4,7 @@
 
 #ifndef CMAKESFMLPROJECT_RHAEGAL_H
 #define CMAKESFMLPROJECT_RHAEGAL_H
+#include "Entities.h"
 #include "Monster.h"
 #include <iostream>
 #include <cmath>

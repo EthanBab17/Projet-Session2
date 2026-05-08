@@ -54,6 +54,7 @@ public:
     void map3();
     void HouseIn();
     void HouseOut();
+    void inMemory();
     void loadGame();
 };
 

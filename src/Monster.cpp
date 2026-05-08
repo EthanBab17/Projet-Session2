@@ -23,8 +23,8 @@ int Monster::getPv() const {
 void Monster::setPv(int newPv) {
     this->pv = newPv;
 }
-void Monster::setLevel(int level) {
-    this->level = level;
+void Monster::setLevel(int newlevel) {
+    this->level = newlevel;
 }
 
 int Monster::getLevel() const{

@@ -18,12 +18,16 @@ GamePlay::GamePlay()
     mPlayerTeam.push_back(new Rhaegal());
     if (!mPlayerTeam.empty() && mPlayerTeam[0] != nullptr) {
         mPlayerTeam[0]->loadTexture("../../src/Sprite/Rhaegal.png");
-        mPlayerTeam[0]->mSprite.setPosition({100.f, 450.f});
+        mPlayerTeam[0]->mSprite.setPosition({50.f, 0.f});
         mPlayerTeam[0]->mSprite.setScale({1.f, 1.f});
     }
-    // mPlayerTeam.push_back(new AutreMonstre());
-
-    mRhaegal2.loadTexture("../../src/Sprite/Rhaegal.png");
+    mPlayerTeam.push_back(new Rhaegal());
+    if (!mPlayerTeam.empty() && mPlayerTeam[0] != nullptr) {
+        mPlayerTeam[1]->loadTexture("../../src/Sprite/Map1.png");
+        mPlayerTeam[1]->mSprite.setPosition({50.f, 0.f});
+        mPlayerTeam[1]->mSprite.setScale({1.f, 1.f});
+    }
+    // mRhaegal2.loadTexture("../../src/Sprite/Rhaegal.png");
     mRhaegal2.setPosition({1700.f, -120.f});
     mRhaegal2.mSprite.setScale({-0.7f, 0.7f});
 
@@ -170,13 +174,12 @@ void GamePlay::render() {
     }else {
         if (inMenuFight) {
             if (!mPlayerTeam.empty() && mPlayerTeam[0] != nullptr) {
-                mFight.draw(mWindow, *(mPlayerTeam[0]), mRhaegal2);
+                mFight.draw(mWindow, *(mPlayerTeam[0]), mRhaegal2);//
             } else {
                 std::cerr << "Erreur : L'equipe est vide, impossible de combattre !" << std::endl;
                 inMenuFight = false;
             }
         }else {
-            std::cout << "Taille de l'equipe : " << mPlayerTeam.size() << std::endl;
             mMap.draw(mWindow);
             if (mMap.mCurrentMapIndex == 3) {
                 mPnj.draw(mWindow);
@@ -208,16 +211,12 @@ void GamePlay::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
                 inMenu = false;
             }
             if (mMenu.mCurrentMenuIndex == 2) {
-                std::ofstream dataRecording("../../src/data.csv");
-                if (dataRecording.is_open()) {
-                    dataRecording << mMap.mCurrentMapIndex << ","
-                    << mPlayer.getPosition().x << ","
-                    << mPlayer.getPosition().y << ","
-                    << mPlayerTeam[0]->getLevel() << ","
-                    << mPlayerTeam[0]->getCurrentExp();
-                }
+                inMemory();
+            }
+            if (mMenu.mCurrentMenuIndex == 3) {
                 mWindow.close();
             }
+
         }
     }
     if (!inMenu) {
@@ -236,8 +235,8 @@ void GamePlay::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
                     }
                     else if (mFight.mCurrentFightIndex == 1) {
                         std::vector<std::string> teamNames;
-                        for(auto& member : mFight.mTeam) {
-                            teamNames.push_back("Lvl " + std::to_string(member.getLevel()));
+                        for(auto& member : mPlayerTeam) {
+                            teamNames.push_back("Lvl " + std::to_string(member->getLevel()));
                         }
                         teamNames.push_back("Back");
                         mFight.menuFight(teamNames);
@@ -245,8 +244,7 @@ void GamePlay::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
                     }else if (mFight.mCurrentFightIndex == 2) {
                         inMenuFight = false;
                     }
-                }
-                else if (mFight.m_currentFightState == FightState::SelectAttack) {
+                }else if (mFight.m_currentFightState == FightState::SelectAttack) {
                     if (mFight.mCurrentFightIndex == 0) {
                         mPlayerTeam[mActiveMonsterIndex]->attack(0,mRhaegal2);
                         std::cout << mRhaegal2.getPv() << std::endl;
@@ -260,7 +258,7 @@ void GamePlay::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
                         mTurnClock.restart();
                     }
                     if (mFight.mCurrentFightIndex == 2) {
-                        mPlayerTeam[mActiveMonsterIndex]->attack(3,mRhaegal2);
+                        mPlayerTeam[mActiveMonsterIndex]->attack(2,mRhaegal2);
                         std::cout << mRhaegal2.getPv() << std::endl;
                         playerTurn = false;
                         mTurnClock.restart();
@@ -269,8 +267,23 @@ void GamePlay::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
                         mFight.m_currentFightState = FightState::MainMenu;
                         mFight.menuFight({"Attack", "Team", "Run"});
                         }
-                    } else {
-                        std::cout << "Lancement de l'attaque : " << mFight.mString[mFight.mCurrentFightIndex] << std::endl;
+                    } else if (mFight.m_currentFightState == FightState::SelectTeam){
+                        if (mFight.mCurrentFightIndex == 0) {
+                            mPlayerTeam[mActiveMonsterIndex] = mPlayerTeam[0];
+                            mFight.m_currentFightState = FightState::MainMenu;
+                            playerTurn = false;
+                            mTurnClock.restart();
+                        }
+                        if (mFight.mCurrentFightIndex == 1) {
+                            mPlayerTeam[mActiveMonsterIndex] = mPlayerTeam[1];
+                            mFight.m_currentFightState = FightState::MainMenu;
+                            playerTurn = false;
+                            mTurnClock.restart();
+                        }
+                        if (mFight.mString[mFight.mCurrentFightIndex] == "Back") {
+                            mFight.m_currentFightState = FightState::MainMenu;
+                            mFight.menuFight({"Attack", "Team", "Run"});
+                        }
                     }
             }
         }
@@ -285,6 +298,7 @@ void GamePlay::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
         }
         if (key == sf::Keyboard::Key::P) {
             mPlayerTeam[mActiveMonsterIndex]->gainExp(50);
+            std::cout<<mPlayerTeam[mActiveMonsterIndex]->getPv()<<std::endl;
         }
     }
 }
@@ -341,6 +355,20 @@ void GamePlay::HouseOut() {
 
     }
 }
+void GamePlay::inMemory() {
+    std::ofstream dataRecording("../../src/data.csv");
+    if (dataRecording.is_open()) {
+        dataRecording << mMap.mCurrentMapIndex << ","
+        << mPlayer.getPosition().x << ","
+        << mPlayer.getPosition().y;
+        for (size_t i = 0; i < mPlayerTeam.size(); ++i) {
+            dataRecording << "," << mPlayerTeam[i]->getLevel() << ","
+            << mPlayerTeam[i]->getCurrentExp();
+        }
+
+    }
+}
+
 void GamePlay::loadGame() {
     std::ifstream loading("../../src/data.csv");
     if (loading.is_open()) {
@@ -368,12 +396,13 @@ void GamePlay::loadGame() {
                 mPnj.initPnj(0);
             }
             else mMap.loadTexture("../../src/Sprite/Map1.png");
+            for (size_t i = 0; i < mPlayerTeam.size(); ++i) {
+                std::getline(ss, val, ',');
+                mPlayerTeam[i]->setLevel(stoi(val));
 
-            std::getline(ss, val, ',');
-            mPlayerTeam[0]->setLevel(stoi(val));
-
-            std::getline(ss, val, ',');
-            mPlayerTeam[0]->setCurrentExp(stoi(val));
+                std::getline(ss, val, ',');
+                mPlayerTeam[i]->setCurrentExp(stoi(val));
+            }
             std::cout << "Chargement reussi : Map " << mMap.mCurrentMapIndex << std::endl;
         }
         loading.close();

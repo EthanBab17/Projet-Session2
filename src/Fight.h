@@ -6,6 +6,7 @@
 #define CMAKESFMLPROJECT_COMBAT_H
 #include <SFML/Graphics.hpp>
 #include  <iostream>
+#include "Entities.h"
 #include "Monster.h"
 #include "Rhaegal.h"
 enum class FightState {
@@ -20,6 +21,8 @@ private:
     sf::IntRect mSourceRect;
     sf::Texture mTexture;
     sf::Font mFont;
+    sf::Text mPv;
+    sf::Text mPv2;
     std::vector<sf::RectangleShape> mButtons;
     std::vector<sf::Text> mText;
     sf::RectangleShape mRect;
@@ -33,7 +36,7 @@ public:
     int mMaxFightOptions;
     Fight();
     void CombatLoadTexture(const std::string &filename);
-    void draw(sf::RenderWindow &window, Monster &monster, Rhaegal &enemyDragon);
+    void draw(sf::RenderWindow &window, Monster &monster, Rhaegal &enemyDragon); //
     void menuFight(const std::vector<std::string>& options);
     void ChooseAction();
 };

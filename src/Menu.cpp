@@ -14,6 +14,7 @@ Menu::Menu() : mSprite(mTexture){
     }
     mString.push_back("Play");
     mString.push_back("Load Game");
+    mString.push_back("Save Game");
     mString.push_back("Quit");
 }
 
