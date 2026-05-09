@@ -36,16 +36,16 @@ void Fight::CombatLoadTexture(const std::string &filename) {
     }
 }
 
-void Fight::draw(sf::RenderWindow &window, Monster& monster, Rhaegal &enemyDragon) {//
+void Fight::draw(sf::RenderWindow &window, Monster& monster, Rhaegal &enemyDragon) {
     window.draw(mSprite);
     monster.draw(window);
-    if (enemyDragon.getPv() > 0) {
+    if (enemyDragon.getActualPv() > 0) {
         enemyDragon.draw(window);
     }
-    mPv.setString("LV." + std::to_string(monster.getLevel()) + "HP: "+ std::to_string(monster.getPv()));// //
+    mPv.setString("LV." + std::to_string(monster.getLevel()) + "HP: "+ std::to_string(monster.getActualPv()));
     mPv.setFillColor(sf::Color::Green);
     mPv.setPosition({50.f, 780.f});
-    mPv2.setString("HP: " + std::to_string(enemyDragon.getPv()));
+    mPv2.setString("HP: " + std::to_string(enemyDragon.getActualPv()));
     mPv2.setFillColor(sf::Color::Red);
     mPv2.setPosition({1000.f, 50.f});
 
@@ -92,4 +92,43 @@ void Fight::menuFight(const std::vector<std::string>& options) {
         txt.setPosition({posX, posY});
         mText.push_back(txt);
     }
+}
+void Fight::updateAnimation(Monster& monster) {
+    if (animPhase == AnimPhase::None) return;
+
+    float elapsed = animClock.getElapsedTime().asSeconds();
+
+    if (animPhase == AnimPhase::Forward) {
+        float t = elapsed / animDuration;
+        if (t >= 1.0f) {
+            animPhase = AnimPhase::Wait;
+            animClock.restart();
+        } else {
+            monster.mSprite.setPosition(originalPos + t * (targetPos - originalPos));
+        }
+    }
+    else if (animPhase == AnimPhase::Wait) {
+        if (elapsed >= 0.1f) {
+            animPhase = AnimPhase::Backward;
+            animClock.restart();
+        }
+    }
+    else if (animPhase == AnimPhase::Backward) {
+        float t = elapsed / animDuration;
+        if (t >= 1.0f) {
+            monster.mSprite.setPosition(originalPos);
+            animPhase = AnimPhase::None;
+        } else {
+            monster.mSprite.setPosition(targetPos + t * (originalPos - targetPos));
+        }
+    }
+}
+void Fight::startAttackAnim(Monster& monster) {
+    originalPos = monster.mSprite.getPosition();
+    targetPos = originalPos + sf::Vector2f(50.f, 0.f);
+    animPhase = AnimPhase::Forward;
+    animClock.restart();
+}
+AnimPhase Fight::getAnimPhase() const {
+    return animPhase;
 }

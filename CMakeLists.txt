@@ -36,7 +36,13 @@ add_executable(CMakeSFMLProject src/main.cpp
         src/Fight.cpp
         src/Fight.h
         src/Monster.cpp
-        src/Monster.h)
+        src/Monster.h
+        src/GiantParrot.cpp
+        src/GiantParrot.h
+        src/Snake.cpp
+        src/Snake.h
+        src/Tarrasque.cpp
+        src/Tarrasque.h)
 target_compile_features(CMakeSFMLProject PRIVATE cxx_std_17)
 target_link_libraries(CMakeSFMLProject PRIVATE sfml-graphics)
 

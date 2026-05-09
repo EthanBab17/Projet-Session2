@@ -13,13 +13,12 @@
 class Rhaegal : public Monster{
     public:
     Rhaegal();
-
     void attack(int moveIndex, Monster& target) override;
-
+    std::string getAttackName(int moveIndex) override;
+    private:
     int damageTaken;
     std::list<std::string> mAttackName;
     std::list<int> mAttacks;
-
 };
 
 

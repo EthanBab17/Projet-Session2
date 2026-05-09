@@ -21,13 +21,18 @@ GamePlay::GamePlay()
         mPlayerTeam[0]->mSprite.setPosition({50.f, 0.f});
         mPlayerTeam[0]->mSprite.setScale({1.f, 1.f});
     }
-    mPlayerTeam.push_back(new Rhaegal());
-    if (!mPlayerTeam.empty() && mPlayerTeam[0] != nullptr) {
-        mPlayerTeam[1]->loadTexture("../../src/Sprite/Map1.png");
+    mPlayerTeam.push_back(new GiantParrot());
+    if (!mPlayerTeam.empty() && mPlayerTeam[1] != nullptr) {
+        mPlayerTeam[1]->loadTexture("../../src/Sprite/Parrot.png");
         mPlayerTeam[1]->mSprite.setPosition({50.f, 0.f});
         mPlayerTeam[1]->mSprite.setScale({1.f, 1.f});
     }
-    // mRhaegal2.loadTexture("../../src/Sprite/Rhaegal.png");
+    mPlayerTeam.push_back(new Tarrasque());
+    if (!mPlayerTeam.empty() && mPlayerTeam[2] != nullptr) {
+        mPlayerTeam[2]->loadTexture("../../src/Sprite/Tarrasque.png");
+        mPlayerTeam[2]->mSprite.setPosition({100.f, 100.f});
+        mPlayerTeam[2]->mSprite.setScale({0.8f, 0.8f});
+    }
     mRhaegal2.setPosition({1700.f, -120.f});
     mRhaegal2.mSprite.setScale({-0.7f, 0.7f});
 
@@ -83,20 +88,24 @@ void GamePlay::update() {
                     int damage = 10; // Remplace par une vraie fonction mEnemy.attack(
                     mPlayerTeam[mActiveMonsterIndex]->takeDamage(damage);
 
-                    std::cout << "L'ennemi attaque ! Vos PV : " << mPlayerTeam[mActiveMonsterIndex]->getPv() << std::endl;
+                    std::cout << "L'ennemi attaque ! Vos PV : " << mPlayerTeam[mActiveMonsterIndex]->getActualPv() << std::endl;
                     mFight.m_currentFightState = FightState::MainMenu;
                     mFight.menuFight({"Attacks", "Team", "Run"});
                     playerTurn = true;
                 }
             }
-        if (mPlayerTeam[mActiveMonsterIndex]->getPv() < 0 || mRhaegal2.getPv() < 0) {
-            inMenuFight = false;
-            mPlayerTeam[mActiveMonsterIndex]->setPv(100);
-            mRhaegal2.setPv(100);
-            playerTurn = true;
-            if (mPlayerTeam[mActiveMonsterIndex]->getPv() > 0) {
+        if ((mPlayerTeam[mActiveMonsterIndex]->getActualPv() <= 0 || mRhaegal2.getActualPv() <= 0)&& mFight.getAnimPhase() == AnimPhase::None) {
+            mPlayerTeam[mActiveMonsterIndex]->resetAtk();
+            if (mPlayerTeam[mActiveMonsterIndex]->getActualPv() > 0) {
                 mPlayerTeam[mActiveMonsterIndex]->gainExp(100);
             }
+            mActiveMonsterIndex = 0;
+            inMenuFight = false;
+            for (size_t i = 0; i < mPlayerTeam.size(); i++) {
+                mPlayerTeam[i]->resetPv();
+            }
+            mRhaegal2.resetPv();
+            playerTurn = true;
         }
     }else {
         sf::Vector2f oldPosition = mPlayer.getPosition();
@@ -174,7 +183,8 @@ void GamePlay::render() {
     }else {
         if (inMenuFight) {
             if (!mPlayerTeam.empty() && mPlayerTeam[0] != nullptr) {
-                mFight.draw(mWindow, *(mPlayerTeam[0]), mRhaegal2);//
+                mFight.updateAnimation(*mPlayerTeam[mActiveMonsterIndex]);
+                mFight.draw(mWindow, *(mPlayerTeam[mActiveMonsterIndex]), mRhaegal2);
             } else {
                 std::cerr << "Erreur : L'equipe est vide, impossible de combattre !" << std::endl;
                 inMenuFight = false;
@@ -231,12 +241,12 @@ void GamePlay::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
                 if (mFight.m_currentFightState == FightState::MainMenu) {
                     if (mFight.mCurrentFightIndex == 0) {
                         mFight.m_currentFightState = FightState::SelectAttack;
-                        mFight.menuFight({"FireBall", "wingSlash", "DracoMeteor", "Back"});
+                        mFight.menuFight({mPlayerTeam[mActiveMonsterIndex]->getAttackName(0),mPlayerTeam[mActiveMonsterIndex]->getAttackName(1),mPlayerTeam[mActiveMonsterIndex]->getAttackName(2),"Back"});
                     }
                     else if (mFight.mCurrentFightIndex == 1) {
                         std::vector<std::string> teamNames;
                         for(auto& member : mPlayerTeam) {
-                            teamNames.push_back("Lvl " + std::to_string(member->getLevel()));
+                            teamNames.push_back(member->getName() + "Lvl " + std::to_string(member->getLevel()));
                         }
                         teamNames.push_back("Back");
                         mFight.menuFight(teamNames);
@@ -246,20 +256,24 @@ void GamePlay::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
                     }
                 }else if (mFight.m_currentFightState == FightState::SelectAttack) {
                     if (mFight.mCurrentFightIndex == 0) {
+                        mFight.startAttackAnim(*mPlayerTeam[mActiveMonsterIndex]);
                         mPlayerTeam[mActiveMonsterIndex]->attack(0,mRhaegal2);
-                        std::cout << mRhaegal2.getPv() << std::endl;
+                        std::cout << mRhaegal2.getActualPv() << std::endl;
                         playerTurn = false;
                         mTurnClock.restart();
                     }
                     if (mFight.mCurrentFightIndex == 1) {
+                        mFight.startAttackAnim(*mPlayerTeam[mActiveMonsterIndex]);
                         mPlayerTeam[mActiveMonsterIndex]->attack(1,mRhaegal2);
-                        std::cout << mRhaegal2.getPv() << std::endl;
+                        std::cout << mRhaegal2.getActualPv() << std::endl;
                         playerTurn = false;
                         mTurnClock.restart();
                     }
                     if (mFight.mCurrentFightIndex == 2) {
+                        mFight.startAttackAnim(*mPlayerTeam[mActiveMonsterIndex]);
                         mPlayerTeam[mActiveMonsterIndex]->attack(2,mRhaegal2);
-                        std::cout << mRhaegal2.getPv() << std::endl;
+
+                        std::cout << mRhaegal2.getActualPv() << std::endl;
                         playerTurn = false;
                         mTurnClock.restart();
                     }
@@ -269,13 +283,19 @@ void GamePlay::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
                         }
                     } else if (mFight.m_currentFightState == FightState::SelectTeam){
                         if (mFight.mCurrentFightIndex == 0) {
-                            mPlayerTeam[mActiveMonsterIndex] = mPlayerTeam[0];
+                            mActiveMonsterIndex = 0;
                             mFight.m_currentFightState = FightState::MainMenu;
                             playerTurn = false;
                             mTurnClock.restart();
                         }
                         if (mFight.mCurrentFightIndex == 1) {
-                            mPlayerTeam[mActiveMonsterIndex] = mPlayerTeam[1];
+                            mActiveMonsterIndex = 1;
+                            mFight.m_currentFightState = FightState::MainMenu;
+                            playerTurn = false;
+                            mTurnClock.restart();
+                        }
+                        if (mFight.mCurrentFightIndex == 2) {
+                            mActiveMonsterIndex = 2;
                             mFight.m_currentFightState = FightState::MainMenu;
                             playerTurn = false;
                             mTurnClock.restart();
@@ -298,7 +318,7 @@ void GamePlay::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
         }
         if (key == sf::Keyboard::Key::P) {
             mPlayerTeam[mActiveMonsterIndex]->gainExp(50);
-            std::cout<<mPlayerTeam[mActiveMonsterIndex]->getPv()<<std::endl;
+            std::cout<<mPlayerTeam[mActiveMonsterIndex]->getActualPv()<<std::endl;
         }
     }
 }

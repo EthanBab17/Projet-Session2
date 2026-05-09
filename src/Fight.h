@@ -14,6 +14,12 @@ enum class FightState {
     SelectAttack,
     SelectTeam
 };
+enum class AnimPhase { None, Forward, Wait, Backward };
+inline AnimPhase animPhase = AnimPhase::None;
+inline sf::Clock animClock;
+inline sf::Vector2f originalPos;
+inline sf::Vector2f targetPos;
+inline float animDuration = 0.3f;
 
 class Fight {
 private:
@@ -27,9 +33,7 @@ private:
     std::vector<sf::Text> mText;
     sf::RectangleShape mRect;
     sf::RectangleShape mRect2;
-    int mActiveMemberIndex = 0;
 public:
-    std::vector<Rhaegal> mTeam;
     std::vector<std::string> mString;
     FightState m_currentFightState = FightState::MainMenu;
     int mCurrentFightIndex;
@@ -38,7 +42,9 @@ public:
     void CombatLoadTexture(const std::string &filename);
     void draw(sf::RenderWindow &window, Monster &monster, Rhaegal &enemyDragon); //
     void menuFight(const std::vector<std::string>& options);
-    void ChooseAction();
+    void updateAnimation(Monster& monster);
+    void startAttackAnim(Monster& monster);
+    AnimPhase getAnimPhase() const;
 };
 
 

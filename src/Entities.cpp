@@ -22,3 +22,10 @@ void Entities::setPosition(sf::Vector2f position) {
 sf::Vector2f Entities::getPosition() {
     return mSprite.getPosition();
 }
+void Entities::setSprite(sf::Sprite sprite) {
+    this->mSprite = sprite;
+}
+
+sf::Sprite Entities::getSprite() {
+    return mSprite;
+}

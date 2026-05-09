@@ -16,6 +16,9 @@
 #include "Pnj.h"
 #include "Monster.h"
 #include "Rhaegal.h"
+#include "GiantParrot.h"
+#include "Snake.h"
+#include "Tarrasque.h"
 #include "RenderText.h"
 #include "Fight.h"
 

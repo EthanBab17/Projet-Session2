@@ -12,7 +12,9 @@
 class Monster : public Entities{
 protected:
     std::string mName;
+    int actualPv;
     int pv;
+    int actualAtk;
     int atk;
     int level;
     int currentExp;
@@ -24,12 +26,15 @@ public:
     void gainExp(int exp);
     void takeDamage(int damge);
     int getPv() const;
-    void setPv(int newPv);
+    int getActualPv() const;
+    void resetPv();
     std::string getName() const;
     void setLevel(int level);
     int getLevel() const;
     void setCurrentExp(int exp);
     int getCurrentExp()const;
+    virtual std::string getAttackName(int moveIndex) = 0;
+    void resetAtk();
 };
 
 
