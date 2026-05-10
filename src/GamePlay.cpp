@@ -18,23 +18,23 @@ GamePlay::GamePlay()
     mPlayerTeam.push_back(new Rhaegal());
     if (!mPlayerTeam.empty() && mPlayerTeam[0] != nullptr) {
         mPlayerTeam[0]->loadTexture("../../src/Sprite/Rhaegal.png");
-        mPlayerTeam[0]->mSprite.setPosition({50.f, 0.f});
-        mPlayerTeam[0]->mSprite.setScale({1.f, 1.f});
+        mPlayerTeam[0]->setPosition({50.f, 0.f});
+        mPlayerTeam[0]->setSpriteScale({1.f, 1.f});
     }
     mPlayerTeam.push_back(new GiantParrot());
     if (!mPlayerTeam.empty() && mPlayerTeam[1] != nullptr) {
         mPlayerTeam[1]->loadTexture("../../src/Sprite/Parrot.png");
-        mPlayerTeam[1]->mSprite.setPosition({50.f, 0.f});
-        mPlayerTeam[1]->mSprite.setScale({1.f, 1.f});
+        mPlayerTeam[1]->setPosition({50.f, 0.f});
+        mPlayerTeam[1]->setSpriteScale({1.f, 1.f});
     }
     mPlayerTeam.push_back(new Tarrasque());
     if (!mPlayerTeam.empty() && mPlayerTeam[2] != nullptr) {
         mPlayerTeam[2]->loadTexture("../../src/Sprite/Tarrasque.png");
-        mPlayerTeam[2]->mSprite.setPosition({100.f, 100.f});
-        mPlayerTeam[2]->mSprite.setScale({0.8f, 0.8f});
+        mPlayerTeam[2]->setPosition({100.f, 100.f});
+        mPlayerTeam[2]->setSpriteScale({0.8f, 0.8f});
     }
     mRhaegal2.setPosition({1700.f, -120.f});
-    mRhaegal2.mSprite.setScale({-0.7f, 0.7f});
+    mRhaegal2.setSpriteScale({-0.7f, 0.7f});
 
     mWindow.setFramerateLimit(60);
     mMap.loadTexture("../../src/Sprite/Map1.png");
@@ -132,14 +132,13 @@ void GamePlay::update() {
             for (const auto& wall : mMap.mMapsHitboxes[mMap.mCurrentMapIndex]) {
                 collisionDetected = false;
                 for (const auto& wall : mMap.mMapsHitboxes[mMap.mCurrentMapIndex]) {
-                    if (mPlayer.mhitbox.findIntersection(wall)) {
+                    if (mPlayer.getHitbox().findIntersection(wall)) {
                         collisionDetected = true;
                     }
                 }
                 if (collisionDetected) {
                     mPlayer.setPosition(oldPosition);
-                    mPlayer.mhitbox.position.x = (oldPosition.x + 20);
-                    mPlayer.mhitbox.position.y = (oldPosition.y + 100);
+                    mPlayer.setHitboxPos(oldPosition);
                 }
             }
         }
@@ -156,19 +155,18 @@ void GamePlay::update() {
         if (mPlayer.getPosition().x < -50.f && mMap.mCurrentMapIndex != 0) {
             map1Left();
         }
-        if (mPlayer.mhitbox.findIntersection(mDoor.mhitboxes[0]) && mMap.mCurrentMapIndex == 2) {
+        if (mPlayer.getHitbox().findIntersection(mDoor.mhitboxes[0]) && mMap.mCurrentMapIndex == 2) {
             HouseIn();
         }
-        if (mPlayer.mhitbox.findIntersection(mDoor.mhitboxes[1]) && mMap.mCurrentMapIndex == 3) {
+        if (mPlayer.getHitbox().findIntersection(mDoor.mhitboxes[1]) && mMap.mCurrentMapIndex == 3) {
             HouseOut();
         }
-        if (mPlayer.mhitbox.findIntersection(mPnj.mPnjHitboxes[0][0]) && mMap.mCurrentMapIndex == 3) {
+        if (mPlayer.getHitbox().findIntersection(mPnj.mPnjHitboxes[0][0]) && mMap.mCurrentMapIndex == 3) {
             collisionDetected = true;
             mPlayer.setPosition(oldPosition);
-            mPlayer.mhitbox.position.x = (oldPosition.x + 20);
-            mPlayer.mhitbox.position.y = (oldPosition.y + 100);
+            mPlayer.setHitboxPos(oldPosition);
         }
-        if (mPlayer.mhitbox.findIntersection(mPnj.mPnjHitboxes[0][1]) && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::F) && mMap.mCurrentMapIndex == 3){
+        if (mPlayer.getHitbox().findIntersection(mPnj.mPnjHitboxes[0][1]) && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::F) && mMap.mCurrentMapIndex == 3){
             inMenuFight = true;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::C)) {
@@ -194,7 +192,7 @@ void GamePlay::render() {
             if (mMap.mCurrentMapIndex == 3) {
                 mPnj.draw(mWindow);
             }
-            if (mPlayer.mhitbox.findIntersection(mPnj.mPnjHitboxes[0][1])) {
+            if (mPlayer.getHitbox().findIntersection(mPnj.mPnjHitboxes[0][1])) {
                 float width = ((static_cast<float>(mWindow.getSize().y)-100.f));
                 mRenderText.CombatText(0, width, mWindow);
             }

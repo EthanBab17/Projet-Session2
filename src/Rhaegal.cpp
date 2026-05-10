@@ -49,4 +49,5 @@ std::string Rhaegal::getAttackName(int moveIndex){
         case 2:
             return "Dracometeore";
     }
+    return "";
 }

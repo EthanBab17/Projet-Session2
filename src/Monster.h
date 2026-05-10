@@ -7,6 +7,7 @@
 #include <SFML/Graphics.hpp>
 #include <string>
 #include <vector>
+#include <list>
 #include "Entities.h"
 
 class Monster : public Entities{
@@ -18,13 +19,14 @@ protected:
     int atk;
     int level;
     int currentExp;
-    std::vector<std::string> mAttackNames;
+    int damageTaken;
+    std::list<std::string> mAttackNames;
 public:
     Monster();
     virtual ~Monster() = default;
     virtual void attack(int moveIndex, Monster& target) = 0;
     void gainExp(int exp);
-    void takeDamage(int damge);
+    void takeDamage(int damage);
     int getPv() const;
     int getActualPv() const;
     void resetPv();

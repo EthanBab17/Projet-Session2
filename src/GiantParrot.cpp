@@ -50,4 +50,5 @@ std::string GiantParrot::getAttackName(int moveIndex) {
         case 2:
             return "FeatherArrow";
     }
+    return "";
 }

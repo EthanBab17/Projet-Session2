@@ -48,4 +48,5 @@ std::string Snake::getAttackName(int moveIndex){
         case 2:
             return "PoisonSpit";
     }
+    return "";
 }

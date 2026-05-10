@@ -25,7 +25,19 @@ sf::Vector2f Entities::getPosition() {
 void Entities::setSprite(sf::Sprite sprite) {
     this->mSprite = sprite;
 }
-
 sf::Sprite Entities::getSprite() {
     return mSprite;
+}
+sf::Vector2f Entities::getSpritePosition() {
+    return mSprite.getPosition();
+}
+void Entities::setSpriteScale(sf::Vector2f scale) {
+    mSprite.setScale(scale);
+}
+sf::FloatRect Entities::getHitbox() {
+    return mhitbox;
+}
+void Entities::setHitboxPos(sf::Vector2f hitboxPos) {
+    this->mhitbox.position.x = (hitboxPos.x + 20);
+    this->mhitbox.position.y = (hitboxPos.y + 100);
 }

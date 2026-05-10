@@ -104,7 +104,7 @@ void Fight::updateAnimation(Monster& monster) {
             animPhase = AnimPhase::Wait;
             animClock.restart();
         } else {
-            monster.mSprite.setPosition(originalPos + t * (targetPos - originalPos));
+            monster.setPosition(originalPos + t * (targetPos - originalPos));
         }
     }
     else if (animPhase == AnimPhase::Wait) {
@@ -116,15 +116,15 @@ void Fight::updateAnimation(Monster& monster) {
     else if (animPhase == AnimPhase::Backward) {
         float t = elapsed / animDuration;
         if (t >= 1.0f) {
-            monster.mSprite.setPosition(originalPos);
+            monster.setPosition(originalPos);
             animPhase = AnimPhase::None;
         } else {
-            monster.mSprite.setPosition(targetPos + t * (originalPos - targetPos));
+            monster.setPosition(targetPos + t * (originalPos - targetPos));
         }
     }
 }
 void Fight::startAttackAnim(Monster& monster) {
-    originalPos = monster.mSprite.getPosition();
+    originalPos = monster.getSpritePosition();
     targetPos = originalPos + sf::Vector2f(50.f, 0.f);
     animPhase = AnimPhase::Forward;
     animClock.restart();

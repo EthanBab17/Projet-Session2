@@ -50,4 +50,5 @@ std::string Tarrasque::getAttackName(int moveIndex) {
         case 2:
             return "Doom";
     }
+    return "";
 }

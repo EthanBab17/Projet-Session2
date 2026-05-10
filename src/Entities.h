@@ -8,14 +8,14 @@
 #include <iostream>
 
 class Entities {
-public:
+protected:
     sf::IntRect mSourceRect;
     sf::Texture mTexture;
     sf::FloatRect mhitbox;
     std::vector<sf::FloatRect> mhitboxes;
     sf::Vector2f mPosition;
     sf::Sprite mSprite;
-
+public:
     Entities():mSprite(mTexture){};
     virtual ~Entities() = default;
     void loadTexture(const std::string &filename);
@@ -24,6 +24,10 @@ public:
     sf::Vector2f getPosition();
     void setSprite(sf::Sprite sprite);
     sf::Sprite getSprite();
+    sf::Vector2f getSpritePosition();
+    void setSpriteScale(sf::Vector2f scale);
+    sf::FloatRect getHitbox();
+    void setHitboxPos(sf::Vector2f hitboxPos);
 };
 
 
