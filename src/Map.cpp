@@ -51,7 +51,23 @@ Map::Map()
     mhitboxes.push_back(sf::FloatRect({0, 665}, {208, 150}));
     mMapsHitboxes.push_back(mhitboxes);
     }
+int Map::getCurrentMapIndex() {
+    return mCurrentMapIndex;
+}
+void Map::setCurrentMapIndex(int index) {
+    this->mCurrentMapIndex = index;
+}
+std::vector<std::vector<sf::FloatRect>> Map::getHitboxes() {
+    return mMapsHitboxes;
+}
+void Map::addTallGrass(sf::FloatRect rect) {
+    spawnZones.push_back(rect);
+}
 
-void Map::draw(sf::RenderWindow &window) {
-    window.draw(mSprite);
+const std::vector<sf::FloatRect>& Map::getTallGrass() const {
+    return spawnZones;
+}
+
+void Map::clearZones() {
+    spawnZones.clear();
 }

@@ -9,12 +9,21 @@
 #include "Entities.h"
 
 class Map : public Entities{
-    public:
-    std::vector<sf::FloatRect> mhitboxes;
+private:
     std::vector<std::vector<sf::FloatRect>> mMapsHitboxes;
     int mCurrentMapIndex;
+    std::vector<sf::FloatRect> spawnZones;
+
+    sf::Clock stepClock;
+public:
     Map();
-    void draw(sf::RenderWindow &window);
+    int getCurrentMapIndex();
+    void setCurrentMapIndex(int index);
+    std::vector<std::vector<sf::FloatRect>> getHitboxes();
+    std::vector<std::vector<sf::FloatRect>> mMapsSpawnZones;
+    void addTallGrass(sf::FloatRect rect);
+    const std::vector<sf::FloatRect>& getTallGrass() const;
+    void clearZones();
 };
 
 

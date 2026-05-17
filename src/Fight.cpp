@@ -36,16 +36,16 @@ void Fight::CombatLoadTexture(const std::string &filename) {
     }
 }
 
-void Fight::draw(sf::RenderWindow &window, Monster& monster, Rhaegal &enemyDragon) {
+void Fight::draw(sf::RenderWindow &window, Monster& monster, Monster &wildMonster) {
     window.draw(mSprite);
     monster.draw(window);
-    if (enemyDragon.getActualPv() > 0) {
-        enemyDragon.draw(window);
+    if (wildMonster.getActualPv() > 0) {
+        wildMonster.draw(window);
     }
     mPv.setString("LV." + std::to_string(monster.getLevel()) + "HP: "+ std::to_string(monster.getActualPv()));
     mPv.setFillColor(sf::Color::Green);
     mPv.setPosition({50.f, 780.f});
-    mPv2.setString("HP: " + std::to_string(enemyDragon.getActualPv()));
+    mPv2.setString("HP: " + std::to_string(wildMonster.getActualPv()));
     mPv2.setFillColor(sf::Color::Red);
     mPv2.setPosition({1000.f, 50.f});
 

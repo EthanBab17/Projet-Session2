@@ -25,16 +25,20 @@
 class GamePlay {
 private:
     sf::RenderWindow mWindow;
+    float windowlength = static_cast<float>(mWindow.getSize().x);
+    float windowHeight = static_cast<float>(mWindow.getSize().y);
     Player mPlayer;
     Pnj mPnj;
     std::vector<Monster*> mPlayerTeam;
+    Monster* mWildEnemy = nullptr;
     int mActiveMonsterIndex = 0;
-    Rhaegal mRhaegal2;
+    Rhaegal mRhaegal;
     Map mMap;
     RenderText mRenderText;
     Menu mMenu;
     bool inMenu;
     Fight mFight;
+    bool bossFight;
     bool inMenuFight;
     bool playerTurn = true;
     sf::Clock mTurnClock;
@@ -44,8 +48,11 @@ private:
     bool mIsMovingLeft;
     bool mIsMovingRight;
     bool collisionDetected;
+    std::vector<Monster*> mStorage;
+    sf::Clock stepClock;
 public:
     GamePlay();
+    ~GamePlay();
     void run();
     void processEvents();
     void update();
@@ -59,6 +66,12 @@ public:
     void HouseOut();
     void inMemory();
     void loadGame();
+    void checkGrassCollision();
+    void captureMonster(Monster* wildMonster);
+    void startWildFight();
+    Monster* generateWildMonster();
+    void bossFightMenu();
+    void wildFightMenu();
 };
 
 

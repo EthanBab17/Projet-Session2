@@ -40,7 +40,7 @@ public:
     int mMaxFightOptions;
     Fight();
     void CombatLoadTexture(const std::string &filename);
-    void draw(sf::RenderWindow &window, Monster &monster, Rhaegal &enemyDragon); //
+    void draw(sf::RenderWindow &window, Monster &monster,Monster &wildMonster ); //Rhaegal &enemyDragon)
     void menuFight(const std::vector<std::string>& options);
     void updateAnimation(Monster& monster);
     void startAttackAnim(Monster& monster);
