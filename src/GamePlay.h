@@ -8,9 +8,10 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <cmath>
+#include <map>
 #include "Player.h"
 #include "Map.h"
-#include <cmath>
 #include "Menu.h"
 #include "Door.h"
 #include "Pnj.h"
@@ -35,12 +36,14 @@ private:
     Rhaegal mRhaegal;
     Map mMap;
     RenderText mRenderText;
+    sf::Font mFont;
     Menu mMenu;
     bool inMenu;
     Fight mFight;
     bool bossFight;
     bool inMenuFight;
     bool playerTurn = true;
+    bool storageDraw = false;
     sf::Clock mTurnClock;
     Door mDoor;
     bool mIsMovingUp;
@@ -48,7 +51,10 @@ private:
     bool mIsMovingLeft;
     bool mIsMovingRight;
     bool collisionDetected;
-    std::vector<Monster*> mStorage;
+    std::map<int, Monster*> mStorage;
+    std::vector<sf::RectangleShape> mRectangle;
+    int mStorageIndex = 0;
+    int maxStorageIndex = 0;
     sf::Clock stepClock;
 public:
     GamePlay();
@@ -72,6 +78,8 @@ public:
     Monster* generateWildMonster();
     void bossFightMenu();
     void wildFightMenu();
+    void switchMonster(size_t teamIndex, int storageKey);
+    void drawStorage(sf::RenderWindow& window);
 };
 
 

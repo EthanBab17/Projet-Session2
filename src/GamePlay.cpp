@@ -9,33 +9,23 @@ GamePlay::GamePlay()
       , mIsMovingUp(false)
       , mIsMovingDown(false)
       , mIsMovingLeft(false)
-      , mIsMovingRight(false) {
+      , mIsMovingRight(false)
+      , mWildEnemy(nullptr) {
     mPlayer.loadTexture("../../src/Sprite/Player.png");
     mPlayer.setPosition({860.f, 0.f});
     mPnj.loadTexture("../../src/Sprite/Master.png");
-    // mRhaegal.setPosition({100.f, 50.f});
-    // mRhaegal.mSprite.setScale({1.f, 1.f});
-    // mPlayerTeam.push_back(new Rhaegal());
-    // if (!mPlayerTeam.empty() && mPlayerTeam[0] != nullptr) {
-    //     mPlayerTeam[0]->loadTexture("../../src/Sprite/Rhaegal.png");
-    //     mPlayerTeam[0]->setPosition({50.f, 0.f});
-    //     mPlayerTeam[0]->setSpriteScale({1.f, 1.f});
-    // }
     mPlayerTeam.push_back(new GiantParrot());
     if (!mPlayerTeam.empty() && mPlayerTeam[0] != nullptr) {
         mPlayerTeam[0]->loadTexture("../../src/Sprite/Parrot.png");
         mPlayerTeam[0]->setPosition({50.f, 0.f});
         mPlayerTeam[0]->setSpriteScale({1.f, 1.f});
     }
-    // mPlayerTeam.push_back(new Tarrasque());
-    // if (!mPlayerTeam.empty() && mPlayerTeam[2] != nullptr) {
-    //     mPlayerTeam[2]->loadTexture("../../src/Sprite/Tarrasque.png");
-    //     mPlayerTeam[2]->setPosition({100.f, 100.f});
-    //     mPlayerTeam[2]->setSpriteScale({0.8f, 0.8f});
-    // }
     mRhaegal.setPosition({1700.f, -120.f});
     mRhaegal.setSpriteScale({-0.7f, 0.7f});
 
+    if (!mFont.openFromFile("../../src/RetroText.ttf")) {
+        std::cerr << "Erreur de chargement de la police !" << std::endl;
+    }
     mWindow.setFramerateLimit(60);
     mMap.loadTexture("../../src/Sprite/Map1.png");
     mMap.setCurrentMapIndex(0);
@@ -47,6 +37,8 @@ GamePlay::GamePlay()
     mMenu.setPosition({0.f, 0.f});
     inMenu = true;
     inMenuFight = false;
+    bossFight = false;
+    storageDraw = false;
 }
 
 GamePlay::~GamePlay() {
@@ -85,9 +77,14 @@ void GamePlay::update() {
     } else if (inMenuFight) {
         if (!playerTurn) {
             if (mTurnClock.getElapsedTime().asSeconds() > 1.5f) {
-                int damage = 10; // Remplace par une vraie fonction mEnemy.attack(
-                mPlayerTeam[mActiveMonsterIndex]->takeDamage(damage);
-
+                if (bossFight) {
+                    int atk = (rand() % 3);
+                    mFight.startAttackAnimEnemy(mRhaegal);
+                    mRhaegal.attack(atk, *mPlayerTeam[mActiveMonsterIndex]);
+                } else {
+                    mFight.startAttackAnimEnemy(*mWildEnemy);
+                    mWildEnemy->attack(1, *mPlayerTeam[mActiveMonsterIndex]);
+                }
                 std::cout << "L'ennemi attaque ! Vos PV : " << mPlayerTeam[mActiveMonsterIndex]->getActualPv() <<
                         std::endl;
                 mFight.m_currentFightState = FightState::MainMenu;
@@ -191,7 +188,6 @@ void GamePlay::update() {
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::C)) {
             startWildFight();
-            inMenuFight = true;
         }
     }
 }
@@ -203,13 +199,21 @@ void GamePlay::render() {
     } else {
         if (inMenuFight) {
             if (!mPlayerTeam.empty() && mPlayerTeam[0] != nullptr && bossFight == true) {
-                mFight.updateAnimation(*mPlayerTeam[mActiveMonsterIndex]);
+                if (playerTurn) {
+                    mFight.updateAnimation(mRhaegal);
+                } else {
+                    mFight.updateAnimation(*mPlayerTeam[mActiveMonsterIndex]);
+                }
                 mFight.draw(mWindow, *(mPlayerTeam[mActiveMonsterIndex]), mRhaegal);
             } else if (!mPlayerTeam.empty() && mPlayerTeam[0] != nullptr && mWildEnemy != nullptr) {
-                mFight.updateAnimation(*mPlayerTeam[mActiveMonsterIndex]);
+                if (playerTurn) {
+                    mFight.updateAnimation(*mWildEnemy);
+                } else {
+                    mFight.updateAnimation(*mPlayerTeam[mActiveMonsterIndex]);
+                }
                 mFight.draw(mWindow, *(mPlayerTeam[mActiveMonsterIndex]), *mWildEnemy);
             } else {
-                // std::cerr << "Erreur : L'equipe est vide, impossible de combattre !" << std::endl;
+                std::cerr << "Erreur : L'equipe est vide, impossible de combattre !" << std::endl;
                 inMenuFight = false;
             }
         } else {
@@ -233,7 +237,6 @@ void GamePlay::render() {
                         debugShape.setOutlineColor(sf::Color::Green);
                         debugShape.setOutlineThickness(2.f);
 
-                        // On l'affiche à l'écran
                         mWindow.draw(debugShape);
                     }
                 }
@@ -245,7 +248,26 @@ void GamePlay::render() {
                 }
             }
             mPlayer.draw(mWindow);
-            // mRhaegal.draw(mWindow);
+            if (storageDraw == true) {
+                sf::RectangleShape dimOverlay;
+                dimOverlay.setSize(sf::Vector2f(mWindow.getSize().x, mWindow.getSize().y));
+                dimOverlay.setFillColor(sf::Color(0, 0, 0, 150));
+
+                for (size_t i = 0; i < mRectangle.size(); ++i) {
+                    if (i == mStorageIndex) {
+                        mRectangle[i].setOutlineColor(sf::Color::Green);
+                        mRectangle[i].setOutlineThickness(4);
+                    } else {
+                        mRectangle[i].setOutlineColor(sf::Color::White);
+                        mRectangle[i].setOutlineThickness(2);
+                    }
+
+                    mWindow.draw(mRectangle[i]);
+                }
+                mWindow.draw(dimOverlay);
+
+                drawStorage(mWindow);
+            }
         }
     }
     mWindow.display();
@@ -255,6 +277,26 @@ void GamePlay::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
     if (key == sf::Keyboard::Key::Escape && isPressed) {
         if (!inMenu) {
             inMenu = true;
+            storageDraw = false;
+        }
+        return;
+    }
+    if (key == sf::Keyboard::Key::M && isPressed) {
+        storageDraw = !storageDraw;
+        std::cout << "État du Storage : " << (storageDraw ? "Ouvert" : "Fermé") << std::endl;
+    }
+    if (storageDraw && isPressed) {
+        mIsMovingUp = false;
+        mIsMovingDown = false;
+        mIsMovingLeft = false;
+        mIsMovingRight = false;
+        if (key == sf::Keyboard::Key::Up) {
+            mStorageIndex = (mStorageIndex - 1 + maxStorageIndex) % maxStorageIndex;
+        }
+        if (key == sf::Keyboard::Key::Down) {
+            mStorageIndex = (mStorageIndex + 1 + maxStorageIndex) % maxStorageIndex;
+        }
+        if (key == sf::Keyboard::Key::Enter) {
         }
         return;
     }
@@ -284,7 +326,8 @@ void GamePlay::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
     if (!inMenu) {
         if (inMenuFight && isPressed && playerTurn) {
             if (key == sf::Keyboard::Key::Up) {
-                mFight.mCurrentFightIndex = (mFight.mCurrentFightIndex - 1 + mFight.mMaxFightOptions) % mFight.mMaxFightOptions;
+                mFight.mCurrentFightIndex = (mFight.mCurrentFightIndex - 1 + mFight.mMaxFightOptions) % mFight.
+                                            mMaxFightOptions;
             }
             if (key == sf::Keyboard::Key::Down) {
                 mFight.mCurrentFightIndex = (mFight.mCurrentFightIndex + 1) % mFight.mMaxFightOptions;
@@ -305,10 +348,6 @@ void GamePlay::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
             mIsMovingLeft = isPressed;
         } else if (key == sf::Keyboard::Key::D || key == sf::Keyboard::Key::Right) {
             mIsMovingRight = isPressed;
-        }
-        if (key == sf::Keyboard::Key::P) {
-            mPlayerTeam[mActiveMonsterIndex]->gainExp(50);
-            std::cout << mPlayerTeam[mActiveMonsterIndex]->getActualPv() << std::endl;
         }
     }
 }
@@ -349,7 +388,7 @@ void GamePlay::map3() {
     if (mMap.getCurrentMapIndex() < mMap.getHitboxes().size()) {
         mMap.loadTexture("../../src/Sprite/Map3.png");
         mMap.clearZones();
-        mMap.addTallGrass(sf::FloatRect({(618*windowlength/900), (377*windowHeight/507)}, {389.f, 312.f}));
+        mMap.addTallGrass(sf::FloatRect({(618 * windowlength / 900), (377 * windowHeight / 507)}, {389.f, 312.f}));
         mPlayer.setPosition({windowlength - (windowlength - 25), mPlayer.getPosition().y});
     }
 }
@@ -381,15 +420,32 @@ void GamePlay::inMemory() {
     if (dataRecording.is_open()) {
         dataRecording << mMap.getCurrentMapIndex() << ","
                 << mPlayer.getPosition().x << ","
-                << mPlayer.getPosition().y;
+                << mPlayer.getPosition().y << "\n";
         for (size_t i = 0; i < mPlayerTeam.size(); ++i) {
-            dataRecording << "," << mPlayerTeam[i]->getLevel() << ","
-                    << mPlayerTeam[i]->getCurrentExp();
+            if (mPlayerTeam[i] != nullptr) {
+                dataRecording << "TEAM,"
+                              << mPlayerTeam[i]->getName() << ","
+                              << mPlayerTeam[i]->getLevel() << ","
+                              << mPlayerTeam[i]->getCurrentExp() << "\n";
+            }
+        }
+
+        // Lignes Sac : "STORAGE",Slot,Type,Niveau,Exp
+        for (auto const& [slot, monster] : mStorage) {
+            if (monster != nullptr) {
+                dataRecording << "STORAGE,"
+                              << slot << ","
+                              << monster->getName() << ","
+                              << monster->getLevel() << ","
+                              << monster->getCurrentExp() << "\n";
+            }
         }
     }
 }
 
 void GamePlay::loadGame() {
+    std::string type;
+    int level, exp, pv;
     std::ifstream loading("../../src/data.csv");
     if (loading.is_open()) {
         std::string line;
@@ -415,12 +471,69 @@ void GamePlay::loadGame() {
                 mPnj.setPosition({950, 600});
                 mPnj.initPnj(0);
             } else mMap.loadTexture("../../src/Sprite/Map1.png");
-            for (size_t i = 0; i < mPlayerTeam.size(); ++i) {
-                std::getline(ss, val, ',');
-                mPlayerTeam[i]->setLevel(stoi(val));
+            for (Monster *m: mPlayerTeam) {
+                delete m;
+            }
+            mPlayerTeam.clear();
 
-                std::getline(ss, val, ',');
-                mPlayerTeam[i]->setCurrentExp(stoi(val));
+            for (auto const &[slot, monster]: mStorage) {
+                delete monster;
+            }
+            mStorage.clear();
+
+            while (std::getline(loading, line)) {
+                if (line.empty()) continue;
+
+                std::stringstream ss(line);
+                std::string rowType;
+                std::getline(ss, rowType, ','); // Détermine si c'est "TEAM" ou "STORAGE"
+
+                int targetSlot = -1;
+                std::string monsterType;
+
+                if (rowType == "STORAGE") {
+                    std::string slotVal;
+                    std::getline(ss, slotVal, ',');
+                    targetSlot = std::stoi(slotVal);
+                }
+
+                std::getline(ss, monsterType, ',');
+                if (monsterType.empty()) continue;
+
+                Monster *loadedMonster = nullptr;
+                if (monsterType == "Rhaegal") {
+                    loadedMonster = new Rhaegal();
+                    loadedMonster->loadTexture("../../src/Sprite/Rhaegal.png");
+                } else if (monsterType == "GiantParrot") {
+                    loadedMonster = new GiantParrot();
+                    loadedMonster->loadTexture("../../src/Sprite/Parrot.png");
+                } else if (monsterType == "Tarrasque") {
+                    loadedMonster = new Tarrasque();
+                    loadedMonster->loadTexture("../../src/Sprite/Tarrasque.png");
+                } else if (monsterType == "Snake") {
+                    loadedMonster = new Snake();
+                    loadedMonster->loadTexture("../../src/Sprite/Snake.png");
+                }
+
+                if (loadedMonster != nullptr) {
+                    std::string val;
+
+                    std::getline(ss, val, ',');
+                    loadedMonster->setLevel(std::stoi(val));
+
+                    std::getline(ss, val, ',');
+                    loadedMonster->setCurrentExp(std::stoi(val));
+
+                    // Config de base d'affichage
+                    loadedMonster->setPosition({50.f, 0.f});
+                    loadedMonster->setSpriteScale({1.f, 1.f});
+
+                    if (rowType == "TEAM") {
+                        mPlayerTeam.push_back(loadedMonster);
+                    } else if (rowType == "STORAGE" && targetSlot != -1) {
+                        mStorage[targetSlot] = loadedMonster;
+                    }
+                }
             }
             std::cout << "Chargement reussi : Map " << mMap.getCurrentMapIndex() << std::endl;
         }
@@ -453,10 +566,38 @@ void GamePlay::captureMonster(Monster *wildMonster) {
         if (mPlayerTeam.size() < 3) {
             mPlayerTeam.push_back(wildMonster);
             std::cout << wildMonster->getName() << " a rejoint votre equipe !" << std::endl;
+            mWildEnemy = nullptr;
         } else {
-            mStorage.push_back(wildMonster);
+            Monster *clonedMonster = nullptr;
+            if (wildMonster->getName() == "Rhaegal") {
+                clonedMonster = new Rhaegal();
+            } else if (wildMonster->getName() == "GiantParrot") {
+                clonedMonster = new GiantParrot();
+            } else if (wildMonster->getName() == "Tarrasque") {
+                clonedMonster = new Tarrasque();
+            } else if (wildMonster->getName() == "Snake") {
+                clonedMonster = new Snake();
+            } else {
+                clonedMonster = new GiantParrot();
+            }
+
+            clonedMonster->setLevel(wildMonster->getLevel());
+            clonedMonster->setCurrentExp(wildMonster->getCurrentExp());
+
+            int freeSlot = 0;
+            while (mStorage.find(freeSlot) != mStorage.end()) {
+                freeSlot++;
+            }
+            mStorage[freeSlot] = clonedMonster;
             std::cout << wildMonster->getName() << " a ete envoye dans le sac !" << std::endl;
+
+            delete wildMonster;
+            mWildEnemy = nullptr;
         }
+        inMenuFight = false;
+    } else {
+        std::cout << wildMonster->getName() << " n'a pas été capturé" << std::endl;
+        playerTurn = false;
     }
 }
 
@@ -533,8 +674,6 @@ void GamePlay::bossFightMenu() {
             mFight.menuFight(teamNames);
             mFight.m_currentFightState = FightState::SelectTeam;
         } else if (mFight.mCurrentFightIndex == 2) {
-            captureMonster(mWildEnemy);
-        } else if (mFight.mCurrentFightIndex == 3) {
             inMenuFight = false;
         }
     } else if (mFight.m_currentFightState == FightState::SelectAttack) {
@@ -572,16 +711,25 @@ void GamePlay::bossFightMenu() {
             mTurnClock.restart();
         }
         if (mFight.mCurrentFightIndex == 1) {
-            mActiveMonsterIndex = 1;
-            mFight.m_currentFightState = FightState::MainMenu;
-            playerTurn = false;
-            mTurnClock.restart();
+            if (mPlayerTeam.size() > 1 && mPlayerTeam[1] != nullptr) {
+                mActiveMonsterIndex = 1;
+                mFight.m_currentFightState = FightState::MainMenu;
+                playerTurn = false;
+                mTurnClock.restart();
+            } else {
+                std::cout << "Pas de monstre a l'emplacement 2 !" << std::endl;
+            }
         }
+
         if (mFight.mCurrentFightIndex == 2) {
-            mActiveMonsterIndex = 2;
-            mFight.m_currentFightState = FightState::MainMenu;
-            playerTurn = false;
-            mTurnClock.restart();
+            if (mPlayerTeam.size() > 2 && mPlayerTeam[2] != nullptr) {
+                mActiveMonsterIndex = 2;
+                mFight.m_currentFightState = FightState::MainMenu;
+                playerTurn = false;
+                mTurnClock.restart();
+            } else {
+                std::cout << "Pas de monstre a l'emplacement 3 !" << std::endl;
+            }
         }
         if (mFight.mString[mFight.mCurrentFightIndex] == "Back") {
             mFight.m_currentFightState = FightState::MainMenu;
@@ -607,27 +755,28 @@ void GamePlay::wildFightMenu() {
             mFight.menuFight(teamNames);
             mFight.m_currentFightState = FightState::SelectTeam;
         } else if (mFight.mCurrentFightIndex == 2) {
+            captureMonster(mWildEnemy);
+        } else if (mFight.mCurrentFightIndex == 3) {
             inMenuFight = false;
-            bossFight = false;
         }
     } else if (mFight.m_currentFightState == FightState::SelectAttack) {
         if (mFight.mCurrentFightIndex == 0) {
             mFight.startAttackAnim(*mPlayerTeam[mActiveMonsterIndex]);
-            mPlayerTeam[mActiveMonsterIndex]->attack(0, mRhaegal);
+            mPlayerTeam[mActiveMonsterIndex]->attack(0, *mWildEnemy);
             std::cout << mWildEnemy->getActualPv() << std::endl;
             playerTurn = false;
             mTurnClock.restart();
         }
         if (mFight.mCurrentFightIndex == 1) {
             mFight.startAttackAnim(*mPlayerTeam[mActiveMonsterIndex]);
-            mPlayerTeam[mActiveMonsterIndex]->attack(1, mRhaegal);
+            mPlayerTeam[mActiveMonsterIndex]->attack(1, *mWildEnemy);
             std::cout << mWildEnemy->getActualPv() << std::endl;
             playerTurn = false;
             mTurnClock.restart();
         }
         if (mFight.mCurrentFightIndex == 2) {
             mFight.startAttackAnim(*mPlayerTeam[mActiveMonsterIndex]);
-            mPlayerTeam[mActiveMonsterIndex]->attack(2, mRhaegal);
+            mPlayerTeam[mActiveMonsterIndex]->attack(2, *mWildEnemy);
 
             std::cout << mWildEnemy->getActualPv() << std::endl;
             playerTurn = false;
@@ -645,20 +794,111 @@ void GamePlay::wildFightMenu() {
             mTurnClock.restart();
         }
         if (mFight.mCurrentFightIndex == 1) {
-            mActiveMonsterIndex = 1;
-            mFight.m_currentFightState = FightState::MainMenu;
-            playerTurn = false;
-            mTurnClock.restart();
+            if (mPlayerTeam.size() > 1 && mPlayerTeam[1] != nullptr) {
+                mActiveMonsterIndex = 1;
+                mFight.m_currentFightState = FightState::MainMenu;
+                playerTurn = false;
+                mTurnClock.restart();
+            } else {
+                std::cout << "Pas de monstre a l'emplacement 2 !" << std::endl;
+            }
         }
+
         if (mFight.mCurrentFightIndex == 2) {
-            mActiveMonsterIndex = 2;
-            mFight.m_currentFightState = FightState::MainMenu;
-            playerTurn = false;
-            mTurnClock.restart();
+            if (mPlayerTeam.size() > 2 && mPlayerTeam[2] != nullptr) {
+                mActiveMonsterIndex = 2;
+                mFight.m_currentFightState = FightState::MainMenu;
+                playerTurn = false;
+                mTurnClock.restart();
+            } else {
+                std::cout << "Pas de monstre a l'emplacement 3 !" << std::endl;
+            }
         }
         if (mFight.mString[mFight.mCurrentFightIndex] == "Back") {
             mFight.m_currentFightState = FightState::MainMenu;
             mFight.menuFight({"Attack", "Team", "Capture", "Run"});
         }
+    }
+}
+
+void GamePlay::switchMonster(size_t teamIndex, int storageKey) {
+    if (teamIndex >= mPlayerTeam.size()) {
+        return;
+    }
+    if (mStorage.find(storageKey) == mStorage.end()) {
+        return;
+    }
+
+    // 2. Le mécanisme d'échange (Swap)
+    Monster *temp = mPlayerTeam[teamIndex];
+    mPlayerTeam[teamIndex] = mStorage[storageKey];
+
+    if (temp != nullptr) {
+        mStorage[storageKey] = temp;
+    } else {
+        mStorage.erase(storageKey);
+    }
+
+    std::cout << "Echange effectue avec succes !" << std::endl;
+}
+
+void GamePlay::drawStorage(sf::RenderWindow &window) {
+    float X = windowlength / 2;
+    float Y = 200.f;
+    float spacingY = 120.f;
+
+    if (mStorage.size() > 0) {
+        int count = 0;
+        for (auto const &[slot, monster]: mStorage) {
+            if (monster != nullptr) {
+                sf::Text infoText(mFont);
+                infoText.setString(
+                    "Case " + std::to_string(slot) + " : " + monster->getName() + " Lvl " + std::to_string(
+                        monster->getLevel()));
+                infoText.setCharacterSize(24);
+                infoText.setFillColor(sf::Color::White);
+                sf::FloatRect bounds = infoText.getLocalBounds();
+                infoText.setOrigin({
+                    bounds.position.x + bounds.size.x / 2.f,
+                    bounds.position.y + bounds.size.y / 2.f
+                });
+                infoText.setPosition({X + 100.f, Y + (count * spacingY)});
+                window.draw(infoText);
+                for (size_t i = 0; i < mStorage.size(); ++i) {
+                    sf::RectangleShape rect({500, 100});
+                    rect.setFillColor(sf::Color(50, 50, 50, 200));
+                    rect.setOutlineThickness(2);
+                    rect.setOutlineColor(sf::Color::White);
+                    float posX = X - (rect.getSize().x / 2.f);
+                    float posY = Y + (i * spacingY);
+                    rect.setPosition({posX, posY});
+                    mRectangle.push_back(rect);
+                }
+
+                sf::Vector2f originalPos = monster->getSpritePosition();
+                sf::Vector2f originalScale = monster->getSpriteScale();
+                monster->setSpriteScale({0.2f, 0.2f});
+                monster->setPosition({X, Y + (count * spacingY)});
+
+                monster->draw(window); // Ou window.draw(monster->mSprite);
+
+                monster->setSpriteScale(originalScale);
+                monster->setPosition(originalPos);
+                count++;
+                maxStorageIndex++;
+            }
+        }
+    } else {
+        sf::Text infoText(mFont);
+        infoText.setString("No monster in the storage");
+        infoText.setCharacterSize(24);
+        infoText.setFillColor(sf::Color::White);
+        sf::FloatRect bounds = infoText.getLocalBounds();
+        infoText.setOrigin({
+            bounds.position.x + bounds.size.x / 2.f,
+            bounds.position.y + bounds.size.y / 2.f
+        });
+        infoText.setPosition({X, Y});
+        window.draw(infoText);
     }
 }

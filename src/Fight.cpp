@@ -25,6 +25,11 @@ Fight::Fight() : mSprite(mTexture),mPv(mFont),mPv2(mFont){
     mRect2.setSize({820,480});
     mCurrentFightIndex = 0;
     mMaxFightOptions = 0;
+
+    mCurrentFightIndex = 0;
+    mMaxFightOptions = 0;
+    animPhase = AnimPhase::None;
+    animDuration = 0.3f;
 }
 
 void Fight::CombatLoadTexture(const std::string &filename) {
@@ -129,6 +134,13 @@ void Fight::startAttackAnim(Monster& monster) {
     animPhase = AnimPhase::Forward;
     animClock.restart();
 }
+void Fight::startAttackAnimEnemy(Monster &monster) {
+    originalPos = monster.getSpritePosition();
+    targetPos = originalPos + sf::Vector2f(-50.f, 0.f);
+    animPhase = AnimPhase::Forward;
+    animClock.restart();
+}
+
 AnimPhase Fight::getAnimPhase() const {
     return animPhase;
 }

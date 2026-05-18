@@ -50,3 +50,6 @@ std::string Snake::getAttackName(int moveIndex){
     }
     return "";
 }
+std::string Snake::getType() const {
+    return "Snake";
+}

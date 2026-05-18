@@ -52,3 +52,6 @@ std::string GiantParrot::getAttackName(int moveIndex) {
     }
     return "";
 }
+std::string GiantParrot::getType() const {
+    return "GiantParrot";
+}

@@ -15,6 +15,7 @@ public:
     GiantParrot();
     void attack(int moveIndex, Monster& target) override;
     std::string getAttackName(int moveIndex) override;
+    std::string getType() const override;
 };
 
 

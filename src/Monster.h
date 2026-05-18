@@ -24,6 +24,7 @@ protected:
 public:
     Monster();
     virtual ~Monster() = default;
+    virtual std::string getType() const = 0;
     virtual void attack(int moveIndex, Monster& target) = 0;
     void gainExp(int exp);
     void takeDamage(int damage);

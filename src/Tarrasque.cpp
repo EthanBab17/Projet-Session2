@@ -52,3 +52,6 @@ std::string Tarrasque::getAttackName(int moveIndex) {
     }
     return "";
 }
+std::string Tarrasque::getType() const {
+    return "Tarrasque";
+}

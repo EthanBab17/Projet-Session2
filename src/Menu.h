@@ -26,7 +26,6 @@ public:
     void draw(sf::RenderWindow &window);
     void menuLoadTexture(const std::string &filename);
     void setPosition(sf::Vector2f position);
-    void setOptions();
 };
 
 

@@ -51,3 +51,6 @@ std::string Rhaegal::getAttackName(int moveIndex){
     }
     return "";
 }
+std::string Rhaegal::getType() const {
+    return "Rhaegal";
+}

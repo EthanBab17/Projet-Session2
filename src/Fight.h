@@ -15,11 +15,6 @@ enum class FightState {
     SelectTeam
 };
 enum class AnimPhase { None, Forward, Wait, Backward };
-inline AnimPhase animPhase = AnimPhase::None;
-inline sf::Clock animClock;
-inline sf::Vector2f originalPos;
-inline sf::Vector2f targetPos;
-inline float animDuration = 0.3f;
 
 class Fight {
 private:
@@ -33,6 +28,12 @@ private:
     std::vector<sf::Text> mText;
     sf::RectangleShape mRect;
     sf::RectangleShape mRect2;
+
+    AnimPhase animPhase = AnimPhase::None;
+    sf::Clock animClock;
+    sf::Vector2f originalPos;
+    sf::Vector2f targetPos;
+    float animDuration = 0.3f;
 public:
     std::vector<std::string> mString;
     FightState m_currentFightState = FightState::MainMenu;
@@ -44,6 +45,7 @@ public:
     void menuFight(const std::vector<std::string>& options);
     void updateAnimation(Monster& monster);
     void startAttackAnim(Monster& monster);
+    void startAttackAnimEnemy(Monster& monster);
     AnimPhase getAnimPhase() const;
 };
 

@@ -77,9 +77,3 @@ void Menu::menuLoadTexture(const std::string &filename) {
 void Menu::setPosition(sf::Vector2f position) {
     mSprite.setPosition(position);
 }
-
-void Menu::setOptions() {
-    // sf::Font m_font;
-    // mMenuOptions.push_back("Jouer");
-    // mMenuOptions.push_back("Quitter");
-}

@@ -26,6 +26,7 @@ public:
     sf::Sprite getSprite();
     sf::Vector2f getSpritePosition();
     void setSpriteScale(sf::Vector2f scale);
+    sf::Vector2f getSpriteScale();
     sf::FloatRect getHitbox();
     void setHitboxPos(sf::Vector2f hitboxPos);
 };
