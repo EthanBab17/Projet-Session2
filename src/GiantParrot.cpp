@@ -55,3 +55,14 @@ std::string GiantParrot::getAttackName(int moveIndex) {
 std::string GiantParrot::getType() const {
     return "GiantParrot";
 }
+void GiantParrot::realScale() {
+    mSprite.setScale({0.9f, 0.9f});
+}
+void GiantParrot::realFightPosition() {
+    sf::FloatRect boundsEntitie = mSprite.getLocalBounds();
+    mSprite.setOrigin({
+        boundsEntitie.position.x + boundsEntitie.size.x / 2.f,
+        boundsEntitie.position.y + boundsEntitie.size.y / 2.f
+    });
+    mSprite.setPosition({500.f, 500.f});
+}

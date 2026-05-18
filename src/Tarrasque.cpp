@@ -55,3 +55,14 @@ std::string Tarrasque::getAttackName(int moveIndex) {
 std::string Tarrasque::getType() const {
     return "Tarrasque";
 }
+void Tarrasque::realScale() {
+    mSprite.setScale({0.8f, 0.8f});
+}
+void Tarrasque::realFightPosition() {
+    sf::FloatRect boundsEntitie = mSprite.getLocalBounds();
+    mSprite.setOrigin({
+        boundsEntitie.position.x + boundsEntitie.size.x / 2.f,
+        boundsEntitie.position.y + boundsEntitie.size.y / 2.f
+    });
+    mSprite.setPosition({550.f, 500.f});
+}

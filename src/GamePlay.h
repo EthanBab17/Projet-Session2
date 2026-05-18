@@ -51,10 +51,16 @@ private:
     bool mIsMovingLeft;
     bool mIsMovingRight;
     bool collisionDetected;
+
     std::map<int, Monster*> mStorage;
     std::vector<sf::RectangleShape> mRectangle;
+    std::vector<sf::RectangleShape> mRectangleTeam;
     int mStorageIndex = 0;
     int maxStorageIndex = 0;
+    int mStorageSlotToSwap = -1;
+    int mSelectedTeamIndex = 0;
+    bool mIsChoosingTeamForSwap = false;
+
     sf::Clock stepClock;
 public:
     GamePlay();

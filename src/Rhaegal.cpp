@@ -54,3 +54,14 @@ std::string Rhaegal::getAttackName(int moveIndex){
 std::string Rhaegal::getType() const {
     return "Rhaegal";
 }
+void Rhaegal::realScale() {
+    mSprite.setScale({1.f, 1.f});
+}
+void Rhaegal::realFightPosition() {
+    sf::FloatRect boundsEntitie = mSprite.getLocalBounds();
+    mSprite.setOrigin({
+        boundsEntitie.position.x + boundsEntitie.size.x / 2.f,
+        boundsEntitie.position.y + boundsEntitie.size.y / 2.f
+    });
+    mSprite.setPosition({550.f, 550.f});
+}

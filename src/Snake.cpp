@@ -53,3 +53,14 @@ std::string Snake::getAttackName(int moveIndex){
 std::string Snake::getType() const {
     return "Snake";
 }
+void Snake::realScale() {
+    mSprite.setScale({1.f, 1.f});
+}
+void Snake::realFightPosition() {
+    sf::FloatRect boundsEntitie = mSprite.getLocalBounds();
+    mSprite.setOrigin({
+        boundsEntitie.position.x + boundsEntitie.size.x / 2.f,
+        boundsEntitie.position.y + boundsEntitie.size.y / 2.f
+    });
+    mSprite.setPosition({400.f, 400.f});
+}

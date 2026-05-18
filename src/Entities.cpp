@@ -37,6 +37,13 @@ void Entities::setSpriteScale(sf::Vector2f scale) {
 sf::Vector2f Entities::getSpriteScale() {
     return mSprite.getScale();
 }
+void Entities::setOrigin(sf::Vector2f origin) {
+    mSprite.setOrigin(origin);
+
+}
+sf::FloatRect Entities::getBounds() {
+    return mSprite.getLocalBounds();
+}
 
 sf::FloatRect Entities::getHitbox() {
     return mhitbox;

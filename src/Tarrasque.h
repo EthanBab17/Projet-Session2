@@ -16,6 +16,8 @@ public:
     void attack(int moveIndex, Monster& target) override;
     std::string getAttackName(int moveIndex) override;
     std::string getType() const override;
+    void realScale() override;
+    void realFightPosition() override;
 };
 
 

@@ -37,6 +37,8 @@ public:
     void setCurrentExp(int exp);
     int getCurrentExp()const;
     virtual std::string getAttackName(int moveIndex) = 0;
+    virtual void realScale() = 0;
+    virtual void realFightPosition() = 0;
     void resetAtk();
 };
 
