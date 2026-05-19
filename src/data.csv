@@ -1,4 +1,4 @@
-0,860,54
+0,860,144
 TEAM,Tarrasque,3,600
 TEAM,GiantParrot,2,100
 TEAM,Rhaegal,2,100
@@ -7,3 +7,6 @@ STORAGE,1,GiantParrot,1,0
 STORAGE,2,GiantParrot,1,0
 STORAGE,3,GiantParrot,1,0
 STORAGE,4,GiantParrot,1,0
+MONSTERDEX,GiantParrot
+MONSTERDEX,Snake
+MONSTERDEX,Tarrasque

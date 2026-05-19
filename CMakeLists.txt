@@ -42,7 +42,8 @@ add_executable(CMakeSFMLProject src/main.cpp
         src/Snake.cpp
         src/Snake.h
         src/Tarrasque.cpp
-        src/Tarrasque.h)
+        src/Tarrasque.h
+)
 target_compile_features(CMakeSFMLProject PRIVATE cxx_std_17)
 target_link_libraries(CMakeSFMLProject PRIVATE sfml-graphics)
 

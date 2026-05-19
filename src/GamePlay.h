@@ -10,6 +10,7 @@
 #include <sstream>
 #include <cmath>
 #include <map>
+#include <set>
 #include "Player.h"
 #include "Map.h"
 #include "Menu.h"
@@ -52,6 +53,11 @@ private:
     bool mIsMovingRight;
     bool collisionDetected;
 
+    sf::Clock mNotificationClock;
+    float mNotificationDuration = 1.f;
+    bool mShowNotification = false;
+    sf::Text mNotificationText;
+
     std::map<int, Monster*> mStorage;
     std::vector<sf::RectangleShape> mRectangle;
     std::vector<sf::RectangleShape> mRectangleTeam;
@@ -62,6 +68,8 @@ private:
     bool mIsChoosingTeamForSwap = false;
 
     sf::Clock stepClock;
+    std::set<std::string> mMonsterdex;
+    bool monsterdexDraw = false;
 public:
     GamePlay();
     ~GamePlay();
@@ -86,6 +94,8 @@ public:
     void wildFightMenu();
     void switchMonster(size_t teamIndex, int storageKey);
     void drawStorage(sf::RenderWindow& window);
+    void drawMonsterdex(sf::RenderWindow& window);
+    void triggerNotification(const std::string& message);
 };
 
 
