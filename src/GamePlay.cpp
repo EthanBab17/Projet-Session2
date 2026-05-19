@@ -329,10 +329,8 @@ void GamePlay::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
                     mSelectedTeamIndex = (mSelectedTeamIndex - 1 + teamSize) % teamSize;
             } else if (key == sf::Keyboard::Key::Enter) {
                 if (teamSize > 0 && mStorageSlotToSwap != -1) {
-                    // On effectue le swap !
                     switchMonster(mSelectedTeamIndex, mStorageSlotToSwap);
 
-                    // Réinitialisation des états
                     mIsChoosingTeamForSwap = false;
                     mStorageSlotToSwap = -1;
                     mStorageIndex = 0;
@@ -707,7 +705,21 @@ void GamePlay::startWildFight() {
         delete mWildEnemy;
         mWildEnemy = nullptr;
     }
+    generateWildMonster();
+    if (mWildEnemy != nullptr) {
+        mMonsterdex.insert(mWildEnemy->getName());
+        triggerNotification(mWildEnemy->getName() + "as been put in the Monsterdex !");
+        std::cout << mWildEnemy->getName() << "as been put in the Monsterdex !" << std::endl;
+    }
 
+    mFight.m_currentFightState = FightState::MainMenu;
+    mFight.menuFight({"Attack", "Team", "Capture", "Run"});
+
+    inMenuFight = true;
+    playerTurn = true;
+}
+
+Monster *GamePlay::generateWildMonster() {
     int randomChoice = rand() % 100;
 
     if (randomChoice < 10) {
@@ -736,34 +748,8 @@ void GamePlay::startWildFight() {
         mWildEnemy->setSpriteScale({-0.55f, 0.55f});
         mWildEnemy->setPosition({1700.f, -10.f});
     }
-
-    if (mWildEnemy != nullptr) {
-        mMonsterdex.insert(mWildEnemy->getName());
-        triggerNotification(mWildEnemy->getName() + "as been put in the Monsterdex !");
-        std::cout << mWildEnemy->getName() << "as been put in the Monsterdex !" << std::endl;
-    }
-
-    mFight.m_currentFightState = FightState::MainMenu;
-    mFight.menuFight({"Attack", "Team", "Capture", "Run"});
-
-    inMenuFight = true;
-    playerTurn = true;
+    return mWildEnemy;
 }
-
-// Monster *GamePlay::generateWildMonster() {
-//     int r = rand() % 10;
-//     if (r == 0) {
-//         return new Rhaegal();
-//     }else if (r == 1) {
-//         return new Tarrasque();
-//     }else if (r == 2) {
-//         return new GiantParrot();
-//     }else if (r == 3) {
-//         return new Snake();
-//     }else{
-//     return new GiantParrot();
-//     }
-// }
 void GamePlay::bossFightMenu() {
     if (mFight.m_currentFightState == FightState::MainMenu) {
         if (mFight.mCurrentFightIndex == 0) {
