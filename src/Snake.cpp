@@ -54,7 +54,7 @@ std::string Snake::getType() const {
     return "Snake";
 }
 void Snake::realScale() {
-    mSprite.setScale({1.f, 1.f});
+    mSprite.setScale({0.7f, 0.7f});
 }
 void Snake::realFightPosition() {
     sf::FloatRect boundsEntitie = mSprite.getLocalBounds();
@@ -62,5 +62,5 @@ void Snake::realFightPosition() {
         boundsEntitie.position.x + boundsEntitie.size.x / 2.f,
         boundsEntitie.position.y + boundsEntitie.size.y / 2.f
     });
-    mSprite.setPosition({400.f, 400.f});
+    mSprite.setPosition({500.f, 600.f});
 }

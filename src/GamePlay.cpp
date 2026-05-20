@@ -40,7 +40,9 @@ GamePlay::GamePlay()
     inMenuFight = false;
     bossFight = false;
     storageDraw = false;
+    // mIsChoosingTeamForSwap = false;
     monsterdexDraw = false;
+    mAudio.playMusic();
 }
 
 GamePlay::~GamePlay() {
@@ -121,6 +123,7 @@ void GamePlay::update() {
             mActiveMonsterIndex = 0;
             inMenuFight = false;
             bossFight = false;
+            mAudio.playMusic();
             mWildEnemy = nullptr;
             for (size_t i = 0; i < mPlayerTeam.size(); i++) {
                 mPlayerTeam[i]->resetPv();
@@ -190,8 +193,9 @@ void GamePlay::update() {
             sf::Keyboard::isKeyPressed(sf::Keyboard::Key::F) && mMap.getCurrentMapIndex() == 3) {
             bossFight = true;
             inMenuFight = true;
+            mAudio.bossBattleMusic();
         }
-        if (mMap.getCurrentMapIndex() == 1) {
+        if (mMap.getCurrentMapIndex() == 1 || mMap.getCurrentMapIndex() == 2) {
             checkGrassCollision();
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::C)) {
@@ -292,55 +296,111 @@ void GamePlay::handlePlayerInput(sf::Keyboard::Key key, bool isPressed) {
         storageDraw = !storageDraw;
         std::cout << "État du Storage : " << (storageDraw ? "Ouvert" : "Fermé") << std::endl;
     }
-    if (storageDraw && isPressed) {
-        mIsMovingUp = false;
-        mIsMovingDown = false;
-        mIsMovingLeft = false;
-        mIsMovingRight = false;
-        int teamSize = mPlayerTeam.size();
+    if (storageDraw == true) {
 
-        if (!mIsChoosingTeamForSwap) {
-            if (key == sf::Keyboard::Key::Up) {
-                mStorageIndex = (mStorageIndex - 1 + maxStorageIndex) % maxStorageIndex;
+        // ============================================================
+        // 1. GESTION DES DÉPLACEMENTS (HAUT / BAS)
+        // ============================================================
+        if (key == sf::Keyboard::Key::Up && isPressed) {
+            if (mIsChoosingTeamForSwap) {
+                // Étape 2 : On fait bouger le contour vert dans l'ÉQUIPE
+                if (mSelectedTeamIndex > 0) {
+                    mSelectedTeamIndex--;
+                } else {
+                    mSelectedTeamIndex = static_cast<int>(mPlayerTeam.size()) - 1;
+                }
+                std::cout << "Curseur equipe (Haut) : " << mSelectedTeamIndex << std::endl;
+            } else {
+                // Étape 1 : On fait bouger le curseur dans le SAC
+                if (mStorageIndex > 0) {
+                    mStorageIndex--;
+                } else if (!mStorage.empty()) {
+                    mStorageIndex = static_cast<int>(mStorage.size()) - 1;
+                }
+                std::cout << "Curseur stockage (Haut) : " << mStorageIndex << std::endl;
             }
-            if (key == sf::Keyboard::Key::Down) {
-                mStorageIndex = (mStorageIndex + 1 + maxStorageIndex) % maxStorageIndex;
-            }
-            if (key == sf::Keyboard::Key::Enter) {
-                if (mStorage.size() > 0) {
-                    int currentIdx = 0;
-                    for (auto const &[slot, monster]: mStorage) {
-                        if (currentIdx == mStorageIndex) {
-                            mStorageSlotToSwap = slot;
-                            break;
-                        }
-                        currentIdx++;
-                    }
-                    mIsChoosingTeamForSwap = true;
+            return; // On stoppe ici pour éviter que la touche fasse autre chose
+        }
+
+        if (key == sf::Keyboard::Key::Down && isPressed) {
+            if (mIsChoosingTeamForSwap) {
+                // Étape 2 : On fait bouger le contour vert dans l'ÉQUIPE
+                if (mSelectedTeamIndex < static_cast<int>(mPlayerTeam.size()) - 1) {
+                    mSelectedTeamIndex++;
+                } else {
                     mSelectedTeamIndex = 0;
                 }
-            }
-        } else {
-            if (key == sf::Keyboard::Key::Down) {
-                if (teamSize > 0)
-                    mSelectedTeamIndex = (mSelectedTeamIndex + 1) % teamSize;
-            } else if (key == sf::Keyboard::Key::Up) {
-                if (teamSize > 0)
-                    mSelectedTeamIndex = (mSelectedTeamIndex - 1 + teamSize) % teamSize;
-            } else if (key == sf::Keyboard::Key::Enter) {
-                if (teamSize > 0 && mStorageSlotToSwap != -1) {
-                    switchMonster(mSelectedTeamIndex, mStorageSlotToSwap);
-
-                    mIsChoosingTeamForSwap = false;
-                    mStorageSlotToSwap = -1;
+                std::cout << "Curseur equipe (Bas) : " << mSelectedTeamIndex << std::endl;
+            } else {
+                // Étape 1 : On fait bouger le curseur dans le SAC
+                if (mStorageIndex < static_cast<int>(mStorage.size()) - 1) {
+                    mStorageIndex++;
+                } else {
                     mStorageIndex = 0;
                 }
-            } else if (key == sf::Keyboard::Key::Escape) {
+                std::cout << "Curseur stockage (Bas) : " << mStorageIndex << std::endl;
+            }
+            return; // On stoppe ici
+        }
+
+        // ============================================================
+        // 2. GESTION DE LA TOUCHE ENTRÉE (SÉLECTION / VALIDATION)
+        // ============================================================
+        if (key == sf::Keyboard::Key::Enter && isPressed) {
+            if (mIsChoosingTeamForSwap) {
+                // Étape 2 : On valide l'échange définitif
+                switchMonster(mSelectedTeamIndex, mStorageSlotToSwap);
+
+                // Reset des états
                 mIsChoosingTeamForSwap = false;
                 mStorageSlotToSwap = -1;
+                mStorageIndex = 0;
+                mSelectedTeamIndex = 0;
+                return;
+            }
+            else {
+                // Étape 1 : On sélectionne le monstre dans le sac
+                if (!mStorage.empty()) {
+                    int currentCount = 0;
+                    int actualStorageKey = -1;
+
+                    for (auto const& [slot, monster] : mStorage) {
+                        if (monster != nullptr) {
+                            if (currentCount == mStorageIndex) {
+                                actualStorageKey = slot;
+                                break;
+                            }
+                            currentCount++;
+                        }
+                    }
+
+                    if (actualStorageKey != -1) {
+                        mStorageSlotToSwap = actualStorageKey;
+                        mIsChoosingTeamForSwap = true; // Active le rectangle vert
+                        mSelectedTeamIndex = 0;        // Force le départ au premier monstre de l'équipe
+                        std::cout << "Monstre selectionne ! Choix de l'equipe actif." << std::endl;
+                        return;
+                    }
+                }
             }
         }
-        return;
+
+        // ============================================================
+        // 3. TOUCHE ANNULATION (ECHAP)
+        // ============================================================
+        if (key == sf::Keyboard::Key::Escape && isPressed) {
+            if (mIsChoosingTeamForSwap) {
+                // Si on choisissait l'équipe, Echap annule et revient au sac
+                mIsChoosingTeamForSwap = false;
+                mStorageSlotToSwap = -1;
+                mSelectedTeamIndex = 0;
+                std::cout << "Annulation du choix de l'equipe." << std::endl;
+            } else {
+                // Sinon, on ferme complètement le menu du sac
+                storageDraw = false;
+            }
+            return;
+        }
     }
     if (key == sf::Keyboard::Key::N && isPressed) {
         monsterdexDraw = !monsterdexDraw;
@@ -453,7 +513,6 @@ void GamePlay::HouseIn() {
         mPnj.setPosition({950, 600});
         mPnj.initPnj(0);
         mMap.clearZones();
-
         mPlayer.setPosition({windowlength / 2, windowHeight - 250.f});
     }
 }
@@ -463,6 +522,7 @@ void GamePlay::HouseOut() {
     if (mMap.getCurrentMapIndex() < mMap.getHitboxes().size()) {
         mMap.loadTexture("../../src/Sprite/Map3.png");
         mMap.clearZones();
+        mMap.addTallGrass(sf::FloatRect({(618 * windowlength / 900), (377 * windowHeight / 507)}, {389.f, 312.f}));
         mPlayer.setPosition({1150, 565});
         mPnj.initPnj(1);
     }
@@ -534,7 +594,12 @@ void GamePlay::loadGame() {
                 delete monster;
             }
             mStorage.clear();
+            mMonsterdex.clear();
 
+            mStorageIndex = 0;
+            mSelectedTeamIndex = 0;
+            mIsChoosingTeamForSwap = false;
+            mStorageSlotToSwap = -1;
             while (std::getline(loading, line)) {
                 if (line.empty()) {
                     continue;
@@ -559,6 +624,7 @@ void GamePlay::loadGame() {
                     std::string slotVal;
                     std::getline(ss, slotVal, ',');
                     targetSlot = std::stoi(slotVal);
+                    maxStorageIndex++;
                 }
 
                 std::getline(ss, monsterType, ',');
@@ -632,6 +698,7 @@ void GamePlay::captureMonster(Monster *wildMonster) {
             mPlayerTeam.push_back(wildMonster);
             triggerNotification(wildMonster->getName() + " a rejoint votre equipe !");
             std::cout << wildMonster->getName() << " a rejoint votre equipe !" << std::endl;
+            mPlayerTeam[mActiveMonsterIndex]->setCurrentExp(50);
 
             mWindow.clear();
             this->render();
@@ -673,6 +740,7 @@ void GamePlay::captureMonster(Monster *wildMonster) {
             mStorage[freeSlot] = clonedMonster;
             triggerNotification(wildMonster->getName() + " a ete envoye dans le sac !");
             std::cout << wildMonster->getName() << " a ete envoye dans le sac !" << std::endl;
+            mPlayerTeam[mActiveMonsterIndex]->setCurrentExp(50);
 
             mWindow.clear();
             this->render();
@@ -693,6 +761,7 @@ void GamePlay::captureMonster(Monster *wildMonster) {
             mWildEnemy = nullptr;
         }
         inMenuFight = false;
+        mAudio.playMusic();
     } else {
         triggerNotification(wildMonster->getName() + " was not captured");
         std::cout << wildMonster->getName() << " was not captured" << std::endl;
@@ -715,6 +784,7 @@ void GamePlay::startWildFight() {
     mFight.m_currentFightState = FightState::MainMenu;
     mFight.menuFight({"Attack", "Team", "Capture", "Run"});
 
+    mAudio.wildBattleMusic();
     inMenuFight = true;
     playerTurn = true;
 }
@@ -750,6 +820,7 @@ Monster *GamePlay::generateWildMonster() {
     }
     return mWildEnemy;
 }
+
 void GamePlay::bossFightMenu() {
     if (mFight.m_currentFightState == FightState::MainMenu) {
         if (mFight.mCurrentFightIndex == 0) {
@@ -768,13 +839,14 @@ void GamePlay::bossFightMenu() {
             mFight.m_currentFightState = FightState::SelectTeam;
         } else if (mFight.mCurrentFightIndex == 2) {
             inMenuFight = false;
+            mAudio.playMusic();
         }
     } else if (mFight.m_currentFightState == FightState::SelectAttack) {
         if (mFight.mCurrentFightIndex == 0) {
             mFight.startAttackAnim(*mPlayerTeam[mActiveMonsterIndex]);
             mPlayerTeam[mActiveMonsterIndex]->attack(0, mRhaegal);
             triggerNotification(
-                mPlayerTeam[mActiveMonsterIndex]->getName() + mPlayerTeam[mActiveMonsterIndex]->getAttackName(0));
+                mPlayerTeam[mActiveMonsterIndex]->getName() + " " + mPlayerTeam[mActiveMonsterIndex]->getAttackName(0));
             std::cout << mRhaegal.getActualPv() << std::endl;
             playerTurn = false;
             mTurnClock.restart();
@@ -783,7 +855,7 @@ void GamePlay::bossFightMenu() {
             mFight.startAttackAnim(*mPlayerTeam[mActiveMonsterIndex]);
             mPlayerTeam[mActiveMonsterIndex]->attack(1, mRhaegal);
             triggerNotification(
-                mPlayerTeam[mActiveMonsterIndex]->getName() + mPlayerTeam[mActiveMonsterIndex]->getAttackName(1));
+                mPlayerTeam[mActiveMonsterIndex]->getName() + " " + mPlayerTeam[mActiveMonsterIndex]->getAttackName(1));
             std::cout << mRhaegal.getActualPv() << std::endl;
             playerTurn = false;
             mTurnClock.restart();
@@ -792,7 +864,7 @@ void GamePlay::bossFightMenu() {
             mFight.startAttackAnim(*mPlayerTeam[mActiveMonsterIndex]);
             mPlayerTeam[mActiveMonsterIndex]->attack(2, mRhaegal);
             triggerNotification(
-                mPlayerTeam[mActiveMonsterIndex]->getName() + mPlayerTeam[mActiveMonsterIndex]->getAttackName(2));
+                mPlayerTeam[mActiveMonsterIndex]->getName() + " " + mPlayerTeam[mActiveMonsterIndex]->getAttackName(2));
             std::cout << mRhaegal.getActualPv() << std::endl;
             playerTurn = false;
             mTurnClock.restart();
@@ -804,6 +876,8 @@ void GamePlay::bossFightMenu() {
     } else if (mFight.m_currentFightState == FightState::SelectTeam) {
         if (mFight.mCurrentFightIndex == 0) {
             mActiveMonsterIndex = 0;
+            mPlayerTeam[mActiveMonsterIndex]->realFightPosition();
+            mPlayerTeam[mActiveMonsterIndex]->realScale();
             mFight.m_currentFightState = FightState::MainMenu;
             playerTurn = false;
             mTurnClock.restart();
@@ -811,6 +885,8 @@ void GamePlay::bossFightMenu() {
         if (mFight.mCurrentFightIndex == 1) {
             if (mPlayerTeam.size() > 1 && mPlayerTeam[1] != nullptr) {
                 mActiveMonsterIndex = 1;
+                mPlayerTeam[mActiveMonsterIndex]->realFightPosition();
+                mPlayerTeam[mActiveMonsterIndex]->realScale();
                 mFight.m_currentFightState = FightState::MainMenu;
                 playerTurn = false;
                 mTurnClock.restart();
@@ -822,6 +898,8 @@ void GamePlay::bossFightMenu() {
         if (mFight.mCurrentFightIndex == 2) {
             if (mPlayerTeam.size() > 2 && mPlayerTeam[2] != nullptr) {
                 mActiveMonsterIndex = 2;
+                mPlayerTeam[mActiveMonsterIndex]->realFightPosition();
+                mPlayerTeam[mActiveMonsterIndex]->realScale();
                 mFight.m_currentFightState = FightState::MainMenu;
                 playerTurn = false;
                 mTurnClock.restart();
@@ -856,13 +934,14 @@ void GamePlay::wildFightMenu() {
             captureMonster(mWildEnemy);
         } else if (mFight.mCurrentFightIndex == 3) {
             inMenuFight = false;
+            mAudio.playMusic();
         }
     } else if (mFight.m_currentFightState == FightState::SelectAttack) {
         if (mFight.mCurrentFightIndex == 0) {
             mFight.startAttackAnim(*mPlayerTeam[mActiveMonsterIndex]);
             mPlayerTeam[mActiveMonsterIndex]->attack(0, *mWildEnemy);
             triggerNotification(
-                mPlayerTeam[mActiveMonsterIndex]->getName() + mPlayerTeam[mActiveMonsterIndex]->getAttackName(0));
+                mPlayerTeam[mActiveMonsterIndex]->getName() + " " + mPlayerTeam[mActiveMonsterIndex]->getAttackName(0));
             std::cout << mWildEnemy->getActualPv() << std::endl;
             playerTurn = false;
             mTurnClock.restart();
@@ -871,7 +950,7 @@ void GamePlay::wildFightMenu() {
             mFight.startAttackAnim(*mPlayerTeam[mActiveMonsterIndex]);
             mPlayerTeam[mActiveMonsterIndex]->attack(1, *mWildEnemy);
             triggerNotification(
-                mPlayerTeam[mActiveMonsterIndex]->getName() + mPlayerTeam[mActiveMonsterIndex]->getAttackName(1));
+                mPlayerTeam[mActiveMonsterIndex]->getName() + " " + mPlayerTeam[mActiveMonsterIndex]->getAttackName(1));
             std::cout << mWildEnemy->getActualPv() << std::endl;
             playerTurn = false;
             mTurnClock.restart();
@@ -880,7 +959,7 @@ void GamePlay::wildFightMenu() {
             mFight.startAttackAnim(*mPlayerTeam[mActiveMonsterIndex]);
             mPlayerTeam[mActiveMonsterIndex]->attack(2, *mWildEnemy);
             triggerNotification(
-                mPlayerTeam[mActiveMonsterIndex]->getName() + mPlayerTeam[mActiveMonsterIndex]->getAttackName(2));
+                mPlayerTeam[mActiveMonsterIndex]->getName() + " " + mPlayerTeam[mActiveMonsterIndex]->getAttackName(2));
 
             std::cout << mWildEnemy->getActualPv() << std::endl;
             playerTurn = false;
@@ -893,6 +972,8 @@ void GamePlay::wildFightMenu() {
     } else if (mFight.m_currentFightState == FightState::SelectTeam) {
         if (mFight.mCurrentFightIndex == 0) {
             mActiveMonsterIndex = 0;
+            mPlayerTeam[mActiveMonsterIndex]->realFightPosition();
+            mPlayerTeam[mActiveMonsterIndex]->realScale();
             mFight.m_currentFightState = FightState::MainMenu;
             playerTurn = false;
             mTurnClock.restart();
@@ -900,6 +981,8 @@ void GamePlay::wildFightMenu() {
         if (mFight.mCurrentFightIndex == 1) {
             if (mPlayerTeam.size() > 1 && mPlayerTeam[1] != nullptr) {
                 mActiveMonsterIndex = 1;
+                mPlayerTeam[mActiveMonsterIndex]->realFightPosition();
+                mPlayerTeam[mActiveMonsterIndex]->realScale();
                 mFight.m_currentFightState = FightState::MainMenu;
                 playerTurn = false;
                 mTurnClock.restart();
@@ -911,6 +994,8 @@ void GamePlay::wildFightMenu() {
         if (mFight.mCurrentFightIndex == 2) {
             if (mPlayerTeam.size() > 2 && mPlayerTeam[2] != nullptr) {
                 mActiveMonsterIndex = 2;
+                mPlayerTeam[mActiveMonsterIndex]->realFightPosition();
+                mPlayerTeam[mActiveMonsterIndex]->realScale();
                 mFight.m_currentFightState = FightState::MainMenu;
                 playerTurn = false;
                 mTurnClock.restart();

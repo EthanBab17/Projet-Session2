@@ -22,6 +22,7 @@
 #include "Snake.h"
 #include "Tarrasque.h"
 #include "RenderText.h"
+#include "Audio.h"
 #include "Fight.h"
 
 class GamePlay {
@@ -37,6 +38,10 @@ private:
     Rhaegal mRhaegal;
     Map mMap;
     RenderText mRenderText;
+    Audio mAudio;
+    bool bgMusicPlaying = false;
+    bool wildMusicPlaying = false;
+    bool bossMusicPlaying = false;
     sf::Font mFont;
     Menu mMenu;
     bool inMenu;
